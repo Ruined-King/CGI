@@ -4,16 +4,12 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Handles crosstab data processing and calculations
- */
 public class CrosstabData {
     private Map<String, Map<String, Integer>> crosstabData = new HashMap<>();
     private List<String> headers = new ArrayList<>();
     private List<ObservableList<String>> allRows = new ArrayList<>();
     private FilterManager filterManager;
 
-    // Consistent month names - using short French abbreviations
     private static final String[] MONTH_NAMES = {
             "Jan", "Fév", "Mar", "Avr", "Mai", "Jun",
             "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"
@@ -24,10 +20,8 @@ public class CrosstabData {
     private Map<String, Integer> columnTotals = new HashMap<>();
     private int grandTotal = 0;
 
-    // Map for parsing different month formats
     private static final Map<String, Integer> MONTH_MAP = new HashMap<>();
     static {
-        // French abbreviations
         MONTH_MAP.put("Jan", 1);
         MONTH_MAP.put("Janv", 1);
         MONTH_MAP.put("Fév", 2);
@@ -49,7 +43,6 @@ public class CrosstabData {
         MONTH_MAP.put("Déc", 12);
         MONTH_MAP.put("Dec", 12);
 
-        // English names as fallback
         MONTH_MAP.put("January", 1);
         MONTH_MAP.put("February", 2);
         MONTH_MAP.put("March", 3);
@@ -134,7 +127,7 @@ public class CrosstabData {
             checkedCount++;
         }
 
-        return checkedCount > 0 && (dateCount >= checkedCount * 0.7); // 70% should be dates
+        return checkedCount > 0 && (dateCount >= checkedCount * 0.7); 
     }
 
     public void generateCrosstabData(String xColumn, String yColumn, boolean applyFilters, boolean useMonthlyConversion) {
@@ -153,7 +146,6 @@ public class CrosstabData {
             throw new IllegalArgumentException("Selected columns not found in headers!");
         }
 
-        // Get filtered data if filters are applied
         List<ObservableList<String>> dataToProcess = allRows;
         if (applyFilters && filterManager != null) {
             System.out.println("Applying filters in crosstab generation...");
@@ -175,12 +167,10 @@ public class CrosstabData {
             System.out.println("Filtered data: " + dataToProcess.size() + " rows (from " + allRows.size() + " total)");
         }
 
-        // Create crosstab data
         crosstabData.clear();
 
         System.out.println("Processing " + dataToProcess.size() + " rows for crosstab generation");
 
-        // First pass: collect actual data
         for (ObservableList<String> row : dataToProcess) {
             if (row == null || xIndex >= row.size() || yIndex >= row.size()) continue;
 
@@ -193,8 +183,6 @@ public class CrosstabData {
             yValue = yValue.trim();
 
             if (xValue.isEmpty() || yValue.isEmpty()) continue;
-
-            // Apply monthly conversion if needed
             if (useMonthlyConversion) {
                 if (isDateColumn(xColumn)) {
                     xValue = convertToMonthYear(xValue);
@@ -210,9 +198,7 @@ public class CrosstabData {
             crosstabData.get(xValue).merge(yValue, 1, Integer::sum);
         }
 
-        // Second pass: if using monthly conversion, ensure all months in range are represented
         if (useMonthlyConversion) {
-            // Get complete month ranges
             Set<String> completeXRange = new TreeSet<>(this::compareMonthYear);
             Set<String> completeYRange = new TreeSet<>(this::compareMonthYear);
 
@@ -223,14 +209,12 @@ public class CrosstabData {
                 completeYRange = createMonthRangeForY(yColumn, applyFilters, includeAllMonths);
             }
 
-            // Ensure all X months exist in crosstab data
             if (isDateColumn(xColumn)) {
                 for (String xMonth : completeXRange) {
                     crosstabData.computeIfAbsent(xMonth, k -> new HashMap<>());
                 }
             }
 
-            // Ensure all Y months exist for each X value
             if (isDateColumn(yColumn)) {
                 for (Map<String, Integer> xRow : crosstabData.values()) {
                     for (String yMonth : completeYRange) {
@@ -369,7 +353,6 @@ public class CrosstabData {
             dataToProcess = filterManager.getFilteredRows();
         }
 
-        // Find min and max dates from Y column
         Date minDate = null;
         Date maxDate = null;
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
