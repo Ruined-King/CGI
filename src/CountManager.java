@@ -77,8 +77,6 @@ public class CountManager {
 
         valueCombo.setVisible(false);
         valueField.setVisible(false);
-
-        // Fix the ComboBox autoselection issue
         valueCombo.setEditable(true);
         valueCombo.getEditor().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.SPACE) {
