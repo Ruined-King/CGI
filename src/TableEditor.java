@@ -78,12 +78,11 @@ public class TableEditor {
         this.tableController = tableController;
         this.filterManager = filterManager;
         this.mathOperations = new ArrayList<>();
-        this.newlyCreatedColumns = new ArrayList<>(); // Add this
-        this.newColumnData = new HashMap<>(); // Add this
+        this.newlyCreatedColumns = new ArrayList<>();
+        this.newColumnData = new HashMap<>(); 
     }
 
     public void showEditor() {
-        // Get current filtered data
         updateFilteredData();
 
         if (filteredRows.isEmpty()) {
@@ -96,11 +95,10 @@ public class TableEditor {
     }
 
     private void updateFilteredData() {
-        // Get ALL headers (not just visible ones) and ALL rows from table controller
-        List<String> allHeaders = tableController.getAllHeaders(); // You need this method in TableViewController
-        List<ObservableList<String>> allRows = tableController.getAllRows(); // You need this method in TableViewController
+      
+        List<String> allHeaders = tableController.getAllHeaders(); 
+        List<ObservableList<String>> allRows = tableController.getAllRows(); 
 
-        // Apply filtering using FilterManager
         headers = new ArrayList<>(allHeaders);
         filteredRows = new ArrayList<>();
 
@@ -110,19 +108,15 @@ public class TableEditor {
             }
         }
 
-        // Add any newly created columns from this session
         if (!newlyCreatedColumns.isEmpty()) {
             for (String newColumn : newlyCreatedColumns) {
                 if (!headers.contains(newColumn)) {
                     headers.add(newColumn);
-
-                    // Add the new column data to each filtered row
                     List<String> columnData = newColumnData.get(newColumn);
                     for (int i = 0; i < filteredRows.size(); i++) {
                         ObservableList<String> row = filteredRows.get(i);
                         List<String> extendedRow = new ArrayList<>(row);
 
-                        // Find the original row index to get correct column data
                         int originalRowIndex = findOriginalRowIndex(row, allRows);
 
                         if (columnData != null && originalRowIndex >= 0 && originalRowIndex < columnData.size()) {
@@ -873,12 +867,10 @@ public class TableEditor {
     }
 
     private double getValue(ObservableList<String> row, String valueName) throws Exception {
-        // Check if it's a previous calculation result
         if (calculationResults.containsKey(valueName)) {
             return calculationResults.get(valueName);
         }
 
-        // Otherwise, it's a column value
         return getNumericValue(row, valueName);
     }
 
@@ -911,7 +903,6 @@ public class TableEditor {
 
 
 
-    // Replace the calculateMathResult() method with this enhanced version:
     private double calculateEnhancedMathResult(ObservableList<String> row) throws Exception {
         if (mathOperations.isEmpty()) {
             throw new Exception("No operations defined");
@@ -953,7 +944,6 @@ public class TableEditor {
 
 
     private double getNumericValue(ObservableList<String> row, String columnName) throws Exception {
-        // Find the column index in the current headers (which may be filtered)
         int columnIndex = headers.indexOf(columnName);
 
         if (columnIndex == -1) {
@@ -1107,12 +1097,10 @@ public class TableEditor {
     private String getConditionalOutput(boolean conditionResult, ObservableList<String> row) {
         try {
             if (conditionResult) {
-                // True case
                 RadioButton selectedTrue = (RadioButton) trueOutputGroup.getSelectedToggle();
                 if (selectedTrue != null && selectedTrue.getText().startsWith("Text value:")) {
                     return trueOutputField.getText() != null ? trueOutputField.getText() : "";
                 } else {
-                    // Column value
                     String columnName = trueColumnCombo.getValue();
                     if (columnName != null) {
                         int columnIndex = headers.indexOf(columnName);
@@ -1123,12 +1111,10 @@ public class TableEditor {
                     }
                 }
             } else {
-                // False case
                 RadioButton selectedFalse = (RadioButton) falseOutputGroup.getSelectedToggle();
                 if (selectedFalse != null && selectedFalse.getText().startsWith("Text value:")) {
                     return falseOutputField.getText() != null ? falseOutputField.getText() : "";
                 } else {
-                    // Column value
                     String columnName = falseColumnCombo.getValue();
                     if (columnName != null) {
                         int columnIndex = headers.indexOf(columnName);
