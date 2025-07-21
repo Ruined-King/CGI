@@ -18,12 +18,12 @@ public class TableViewController {
                         "-fx-control-inner-background: white;" +
                         "-fx-table-cell-border-color: #ccc;" +
                         "-fx-table-header-border-color: #bbb;" +
-                        "-fx-selection-bar: #d0eaff;" +  // light blue selection
+                        "-fx-selection-bar: #d0eaff;" +  
                         "-fx-selection-bar-non-focused: #e0e0e0;" +
                         "-fx-text-fill: black;"
         );
 
-        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY); // Optional, matches Crosstab
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
     }
     private ScrollPane tableScrollPane;
     private FilterManager filterManager;
@@ -31,16 +31,15 @@ public class TableViewController {
     public TableViewController() {
         setupTableView();
     }
-    // Add these methods to TableViewController.java
 
     public List<String> getAllHeaders() {
-        return new ArrayList<>(headers); // assuming headers is your header list
+        return new ArrayList<>(headers);
     }
 
     public List<ObservableList<String>> getAllRows() {
         return new ArrayList<>(allRows); // assuming data is your row data
     }
-    // Returns the headers currently displayed
+
     public List<String> getVisibleHeaders() {
         List<String> visibleHeaders = new ArrayList<>();
         for (TableColumn<ObservableList<String>, ?> col : tableView.getColumns()) {
@@ -49,33 +48,26 @@ public class TableViewController {
         return visibleHeaders;
     }
 
-    // Returns the filtered rows currently displayed
     public List<ObservableList<String>> getFilteredRows() {
         return new ArrayList<>(tableView.getItems());
     }
 
     public void addNewColumn(String columnName, List<String> columnData) {
-        // Add column to headers
         headers.add(columnName);
 
-        // Add data to existing rows
         for (int i = 0; i < allRows.size() && i < columnData.size(); i++) {
             allRows.get(i).add(columnData.get(i));
         }
 
-        // If there are more data entries than rows, create new rows
         for (int i = allRows.size(); i < columnData.size(); i++) {
             ObservableList<String> newRow = FXCollections.observableArrayList();
-            // Fill with empty strings for existing columns
             for (int j = 0; j < headers.size() - 1; j++) {
                 newRow.add("");
             }
-            // Add the new column data
             newRow.add(columnData.get(i));
             allRows.add(newRow);
         }
 
-        // Refresh the table view
         refreshTable();
     }
 
@@ -133,7 +125,7 @@ public class TableViewController {
     public void setData(List<String> headers, List<ObservableList<String>> allRows) {
         this.headers = new ArrayList<>(headers);
         this.allRows = new ArrayList<>(allRows);
-        applyFilters("", row -> true); // Show all data initially
+        applyFilters("", row -> true); 
     }
 
     public void setFilterManager(FilterManager filterManager) {
@@ -146,13 +138,10 @@ public class TableViewController {
         tableView.getColumns().clear();
         tableView.getItems().clear();
 
-        // Determine which columns to include
         List<Integer> includedIndices = getIncludedColumnIndices(columnFilterInput);
 
-        // Create table columns
         createTableColumns(includedIndices);
 
-        // Add filtered rows
         addFilteredRows(rowFilter, includedIndices);
     }
 
