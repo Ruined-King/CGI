@@ -68,11 +68,9 @@ public class CrosstabTable {
             Set<String> allYValues = new TreeSet<>();
 
             if (useMonthlyConversion && crosstabData.isDateColumn(currentYColumn)) {
-                // For date columns, get only months that have actual data
                 allYValues = crosstabData.createMonthRangeForY(currentYColumn, true);
                 System.out.println("Month range for Y: " + allYValues);
             } else {
-                // For non-date columns, get all Y values that have data
                 for (Map<String, Integer> xRow : data.values()) {
                     if (xRow != null) {
                         for (Map.Entry<String, Integer> entry : xRow.entrySet()) {
@@ -84,13 +82,11 @@ public class CrosstabTable {
                 }
             }
 
-            // Convert to sorted list
             List<String> sortedYValues = new ArrayList<>(allYValues);
             if (useMonthlyConversion && crosstabData.isDateColumn(currentYColumn)) {
                 sortedYValues = crosstabData.sortMonthYearValues(sortedYValues);
             }
 
-            // Create first column (X values)
             TableColumn<ObservableList<String>, String> firstColumn = new TableColumn<>(currentXColumn);
             firstColumn.setCellValueFactory(param -> {
                 if (param.getValue() != null && !param.getValue().isEmpty()) {
@@ -102,7 +98,6 @@ public class CrosstabTable {
             styleTableColumn(firstColumn);
             tableView.getColumns().add(firstColumn);
 
-            // Add Y value columns
             for (int i = 0; i < sortedYValues.size(); i++) {
                 String yValue = sortedYValues.get(i);
                 TableColumn<ObservableList<String>, String> column = new TableColumn<>(yValue);
@@ -121,7 +116,6 @@ public class CrosstabTable {
                 tableView.getColumns().add(column);
             }
 
-            // Add TOTAL column
             TableColumn<ObservableList<String>, String> totalColumn = new TableColumn<>("TOTAL");
             final int totalColIndex = sortedYValues.size() + 1;
             totalColumn.setCellValueFactory(param -> {
@@ -137,7 +131,6 @@ public class CrosstabTable {
             setCellFactory(totalColumn);
             tableView.getColumns().add(totalColumn);
 
-            // Add cumulative column if needed
             if (useCumulativeEffective) {
                 TableColumn<ObservableList<String>, String> xCumulativeColumn = new TableColumn<>("EFFECTIF CUMULÉ X");
                 final int xCumColIndex = sortedYValues.size() + 2;
@@ -155,15 +148,12 @@ public class CrosstabTable {
                 tableView.getColumns().add(xCumulativeColumn);
             }
 
-            // Get X values - only those with actual data
             Set<String> allXValues = new TreeSet<>();
 
             if (useMonthlyConversion && crosstabData.isDateColumn(currentXColumn)) {
-                // For date columns, get only months that have actual data
                 allXValues = crosstabData.createMonthRangeForX(currentXColumn, true);
                 System.out.println("Month range for X: " + allXValues);
             } else {
-                // For non-date columns, get all X values that have data
                 for (Map.Entry<String, Map<String, Integer>> entry : data.entrySet()) {
                     if (entry.getValue() != null &&
                             entry.getValue().values().stream().filter(Objects::nonNull).mapToInt(Integer::intValue).sum() > 0) {
@@ -179,7 +169,6 @@ public class CrosstabTable {
                 Collections.sort(sortedXValues);
             }
 
-            // Calculate totals and cumulative values
             Map<String, Integer> rowTotals = new HashMap<>();
             Map<String, Integer> columnTotals = new HashMap<>();
             Map<String, Integer> xCumulativeEffective = new HashMap<>();
@@ -187,12 +176,10 @@ public class CrosstabTable {
             int grandTotal = 0;
             int xCumulativeSum = 0;
 
-            // Initialize column totals
             for (String yValue : sortedYValues) {
                 columnTotals.put(yValue, 0);
             }
 
-            // Add data rows
             for (String xValue : sortedXValues) {
                 ObservableList<String> row = FXCollections.observableArrayList();
                 row.add(xValue);
@@ -209,12 +196,10 @@ public class CrosstabTable {
                     columnTotals.put(yValue, columnTotals.get(yValue) + countValue);
                 }
 
-                // Add row total
                 row.add(String.valueOf(rowTotal));
                 rowTotals.put(xValue, rowTotal);
                 grandTotal += rowTotal;
 
-                // Add X cumulative effective
                 if (useCumulativeEffective) {
                     xCumulativeSum += rowTotal;
                     row.add(String.valueOf(xCumulativeSum));
@@ -224,7 +209,6 @@ public class CrosstabTable {
                 tableView.getItems().add(row);
             }
 
-            // Calculate Y cumulative values
             if (useCumulativeEffective) {
                 int yCumulativeSum = 0;
                 for (String yValue : sortedYValues) {
@@ -233,7 +217,6 @@ public class CrosstabTable {
                 }
             }
 
-            // Add TOTAL row
             ObservableList<String> totalRow = FXCollections.observableArrayList();
             totalRow.add("TOTAL");
 
@@ -249,7 +232,6 @@ public class CrosstabTable {
 
             tableView.getItems().add(totalRow);
 
-            // Add Y CUMULATIVE row
             if (useCumulativeEffective) {
                 ObservableList<String> yCumulativeRow = FXCollections.observableArrayList();
                 yCumulativeRow.add("EFFECTIF CUMULÉ Y");
@@ -264,13 +246,11 @@ public class CrosstabTable {
                 tableView.getItems().add(yCumulativeRow);
             }
 
-            // Store totals for chart usage
             crosstabData.setTotals(rowTotals, columnTotals, grandTotal);
             if (useCumulativeEffective) {
                 crosstabData.setCumulativeEffective(xCumulativeEffective);
             }
 
-            // Final debug output
             System.out.println("Grand total in table: " + grandTotal);
             System.out.println("Number of X values: " + sortedXValues.size());
             System.out.println("Number of Y values: " + sortedYValues.size());
@@ -323,7 +303,6 @@ public class CrosstabTable {
                     } else {
                         setText(item);
 
-                        // Check if this is a total row, cumulative row, or total/cumulative column
                         ObservableList<String> rowData = getTableRow().getItem();
                         if (rowData != null && !rowData.isEmpty()) {
                             String rowLabel = rowData.get(0);
@@ -333,17 +312,14 @@ public class CrosstabTable {
                             boolean isXCumulativeColumn = "EFFECTIF CUMULÉ X".equals(column.getText());
 
                             if ((isTotalRow || isYCumulativeRow) && (isTotalColumn || isXCumulativeColumn)) {
-                                // Grand total cell or intersection of cumulative/total
                                 setStyle("-fx-border-color: #856404; -fx-border-width: 1px; " +
                                         "-fx-background-color: #ffeaa7; -fx-font-weight: bold; " +
                                         "-fx-text-fill: #856404;");
                             } else if (isTotalRow || isYCumulativeRow) {
-                                // Total row or Y cumulative row
                                 setStyle("-fx-border-color: #495057; -fx-border-width: 1px; " +
                                         "-fx-background-color: #f8f9fa; -fx-font-weight: bold; " +
                                         "-fx-text-fill: #495057;");
                             } else if (isTotalColumn || isXCumulativeColumn) {
-                                // Total column or X cumulative column
                                 setStyle("-fx-border-color: #856404; -fx-border-width: 1px; " +
                                         "-fx-background-color: #fff3cd; -fx-font-weight: bold; " +
                                         "-fx-text-fill: #856404;");
