@@ -127,9 +127,9 @@ public class CrosstabCharts {
         PieChart pieChart = new PieChart(pieChartData);
         pieChart.setTitle("Distribution of " + currentYColumn +
                 (filteredTotals.size() < totals.size() ? " (Top " + filteredTotals.size() + " values)" : ""));
-        pieChart.setLabelLineLength(15); // Increased from 10
-        pieChart.setLegendVisible(false); // We'll create custom legend
-        pieChart.setPrefSize(800, 600); // Much bigger chart
+        pieChart.setLabelLineLength(15); 
+        pieChart.setLegendVisible(false); 
+        pieChart.setPrefSize(800, 600);
         pieChart.setMinSize(600, 450);
 
         String[] enhancedColors = {
@@ -195,7 +195,7 @@ public class CrosstabCharts {
         int maxItemsPerColumn = Math.min(10, data.size()); // Limit items per column
         int columns = (int) Math.ceil((double) data.size() / maxItemsPerColumn);
 
-        for (int i = 0; i < Math.min(data.size(), 50); i++) { // Limit to 50 items max
+        for (int i = 0; i < Math.min(data.size(), 50); i++) { 
             PieChart.Data item = data.get(i);
 
             int row = i % maxItemsPerColumn;
@@ -987,13 +987,13 @@ public class CrosstabCharts {
         styleGraphCheckBox(comboChartCB);
         styleGraphCheckBox(cumulativeChartCB);
 
-        // IMPORTANT: Only enable combo chart and cumulative chart in total-only mode
+   
         if (!totalOnly) {
             comboChartCB.setDisable(true);
             comboChartCB.setText("📚📈 Combo Chart (Only available in Total Mode)");
             comboChartCB.setStyle(comboChartCB.getStyle() + "-fx-opacity: 0.5;");
 
-            // FIX: Also disable cumulative chart when not in total mode
+          
             cumulativeChartCB.setDisable(true);
             cumulativeChartCB.setText("📈📊 Cumulative Effective Chart (Only available in Total Mode)");
             cumulativeChartCB.setStyle(cumulativeChartCB.getStyle() + "-fx-opacity: 0.5;");
@@ -1073,7 +1073,6 @@ public class CrosstabCharts {
         dialog.show();
     }
 
-    // Add these helper methods if they don't already exist in your CrosstabCharts class:
     private void styleGraphCheckBox(CheckBox checkBox) {
         checkBox.setTextFill(Color.WHITE);
         checkBox.setFont(Font.font("Verdana", 14));
