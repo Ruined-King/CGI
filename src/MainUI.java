@@ -66,7 +66,7 @@ public class MainUI extends Application {
             System.err.println("Warning: Could not load application icon");
         }
 
-        // Initialize managers with null checks
+      
         dataManager = new ExcelDataManager();
         filterManager = new FilterManager();
         tableController = new TableViewController();
@@ -81,7 +81,6 @@ public class MainUI extends Application {
         }
 
 
-        // Safe image loading for GIF and logo
         try {
             Image catGif = new Image(getClass().getResource("/resources/cat.gif").toExternalForm());
             loadingImage = new ImageView(catGif);
@@ -455,7 +454,7 @@ public class MainUI extends Application {
         Button newFileButton = createCompactButton("📂 New File", "#dc143c");
         Button savePresetButton = createCompactButton("💾 Save", "#b22222");
         Button managePresetsButton = createCompactButton("📂 Presets", "#8b0000");
-        Button exportButton = createCompactButton("📤 Export Excel", "#228b22"); // NEW EXPORT BUTTON
+        Button exportButton = createCompactButton("📤 Export Excel", "#228b22");
         fullscreenButton = createCompactButton("⛶ Fullscreen", "#a0522d");
         fullscreenButton.setDisable(true);
 
@@ -627,7 +626,7 @@ public class MainUI extends Application {
         tableTitle.setFont(Font.font("Arial", FontWeight.BOLD, 16));
         tableTitle.setFill(Color.WHITE);
 
-        ScrollPane tableScrollPane = tableController.getTableScrollPane(); // ✅ THIS is defined in TableViewController
+        ScrollPane tableScrollPane = tableController.getTableScrollPane(); 
         VBox.setVgrow(tableScrollPane, Priority.ALWAYS);
 
         tableSection.getChildren().addAll(
@@ -763,7 +762,7 @@ public class MainUI extends Application {
                             crosstabUI.refreshUI();
                         }
                         if (embeddedEditor != null) {
-                            embeddedEditor.resetAfterPresetLoad(); // ✅ FIX for the Table Editor
+                            embeddedEditor.resetAfterPresetLoad();
                         }
 
                         showModernAlert("Success",
@@ -852,9 +851,9 @@ public class MainUI extends Application {
 
         TableView<ObservableList<String>> clonedTable = tableController.createClonedTableView();
         ScrollPane fullscreenPane = new ScrollPane(clonedTable);
-        fullscreenPane.setFitToWidth(false);  // Allow horizontal scrolling
+        fullscreenPane.setFitToWidth(false); 
         fullscreenPane.setFitToHeight(true);
-        fullscreenPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);  // Show horizontal scrollbar when needed
+        fullscreenPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);  
         fullscreenPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         fullscreenPane.setStyle("-fx-background-color: #1a1a1a;");
 
