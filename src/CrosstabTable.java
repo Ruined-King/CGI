@@ -32,18 +32,15 @@ public class CrosstabTable {
     public void createCrosstabTable(String currentXColumn, String currentYColumn,
                                     boolean useMonthlyConversion, boolean useCumulativeEffective,
                                     boolean useCumulativeForCharts) {
-        // Clear existing table
         tableView.getColumns().clear();
         tableView.getItems().clear();
 
-        // Validate inputs
         if (currentXColumn == null || currentYColumn == null ||
                 currentXColumn.trim().isEmpty() || currentYColumn.trim().isEmpty()) {
             throw new IllegalArgumentException("X and Y columns cannot be null or empty");
         }
 
         try {
-            // Generate crosstab data with proper filtering and monthly conversion
             crosstabData.generateCrosstabData(currentXColumn, currentYColumn, true, useMonthlyConversion);
 
             Map<String, Map<String, Integer>> data = crosstabData.getCrosstabData();
@@ -51,7 +48,6 @@ public class CrosstabTable {
                 throw new IllegalStateException("No data to display in crosstab!");
             }
 
-            // Debug: Print total count to verify data isn't being lost
             int totalCount = 0;
             for (Map<String, Integer> xRow : data.values()) {
                 if (xRow != null) {
@@ -64,7 +60,6 @@ public class CrosstabTable {
             }
             System.out.println("Total count in crosstab: " + totalCount);
 
-            // Get all unique Y values
             Set<String> allYValues = new TreeSet<>();
 
             if (useMonthlyConversion && crosstabData.isDateColumn(currentYColumn)) {
@@ -324,7 +319,6 @@ public class CrosstabTable {
                                         "-fx-background-color: #fff3cd; -fx-font-weight: bold; " +
                                         "-fx-text-fill: #856404;");
                             } else {
-                                // Regular cell
                                 setStyle("-fx-border-color: #d3d3d3; -fx-border-width: 0.5px; " +
                                         "-fx-background-color: white;");
                             }
