@@ -25,14 +25,14 @@ public class PresetManager {
     private static final String PRESETS_DIR = "presets";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-    // Create Gson with custom LocalDateTime adapter
+    
     private static final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .setPrettyPrinting()
             .create();
 
     static {
-        // Create presets directory if it doesn't exist
+        
         File dir = new File(PRESETS_DIR);
         if (!dir.exists()) {
             dir.mkdirs();
@@ -74,12 +74,12 @@ public class PresetManager {
         layout.setPadding(new Insets(20));
         layout.setStyle("-fx-background-color: #2c3e50;");
 
-        // Title
+        
         Label titleLabel = new Label("Save New Preset");
         titleLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 16));
         titleLabel.setTextFill(Color.WHITE);
 
-        // Preset name input
+        
         Label nameLabel = new Label("Preset Name:");
         nameLabel.setTextFill(Color.WHITE);
         nameLabel.setFont(Font.font("Verdana", 12));
@@ -89,17 +89,17 @@ public class PresetManager {
         nameField.setStyle("-fx-background-color: #34495e; -fx-text-fill: white; -fx-prompt-text-fill: #bdc3c7;");
         nameField.setPrefWidth(300);
 
-        // Auto-suggest name based on current timestamp
+        
         String suggestedName = "Preset_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm"));
         nameField.setText(suggestedName);
         nameField.selectAll();
 
-        // Info about the preset
+        
         Label infoLabel = new Label("File: " + new File(filePath).getName() + "\nFilters: " + filters.size());
         infoLabel.setTextFill(Color.LIGHTGRAY);
         infoLabel.setFont(Font.font("Verdana", 10));
 
-        // Buttons
+        
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER);
 
@@ -130,7 +130,7 @@ public class PresetManager {
 
         cancelButton.setOnAction(e -> dialog.close());
 
-        // Enter key saves
+        
         nameField.setOnAction(e -> saveButton.fire());
 
         Scene scene = new Scene(layout);
@@ -165,24 +165,24 @@ public class PresetManager {
         layout.setPadding(new Insets(20));
         layout.setStyle("-fx-background-color: #2c3e50;");
 
-        // Title
+        
         Label titleLabel = new Label("Manage Presets");
         titleLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
         titleLabel.setTextFill(Color.WHITE);
 
-        // Preset list
+        
         ListView<PresetItem> presetList = new ListView<>();
         presetList.setPrefHeight(300);
         presetList.setPrefWidth(500);
         presetList.setStyle("-fx-background-color: #34495e; -fx-border-color: #7f8c8d;");
 
-        // Custom cell factory for preset items
+        
         presetList.setCellFactory(listView -> new PresetListCell());
 
-        // Load presets
+        
         loadPresetsIntoList(presetList);
 
-        // Buttons
+        
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER);
 
@@ -200,7 +200,7 @@ public class PresetManager {
 
         layout.getChildren().addAll(titleLabel, presetList, buttonBox);
 
-        // Button actions
+        
         loadButton.setOnAction(e -> {
             PresetItem selected = presetList.getSelectionModel().getSelectedItem();
             if (selected != null) {
@@ -261,7 +261,7 @@ public class PresetManager {
             }
         }
 
-        // Sort by creation date (newest first)
+        
         presets.sort((a, b) -> {
             if (a.preset.createdAt == null && b.preset.createdAt == null) return 0;
             if (a.preset.createdAt == null) return 1;
@@ -306,14 +306,14 @@ public class PresetManager {
         alert.showAndWait();
     }
 
-    // Callback for loading preset
+    
     private static java.util.function.Consumer<PresetData> loadPresetCallback;
 
     public static void setLoadPresetCallback(java.util.function.Consumer<PresetData> callback) {
         loadPresetCallback = callback;
     }
 
-    // Data classes
+    
     public static class PresetData {
         public String name;
         public String filePath;
@@ -327,7 +327,7 @@ public class PresetManager {
             this.createdAt = createdAt;
         }
 
-        // Default constructor for Gson
+        
         public PresetData() {
         }
     }
@@ -342,7 +342,7 @@ public class PresetManager {
         }
     }
 
-    // Custom list cell for presets
+    
     private static class PresetListCell extends ListCell<PresetItem> {
         @Override
         protected void updateItem(PresetItem item, boolean empty) {
@@ -385,9 +385,9 @@ public class PresetManager {
         }
     }
 
-    // Legacy method for backward compatibility
+    
     public static PresetData loadPreset() {
-        // This method is now deprecated, use showPresetManagerDialog instead
+        
         return null;
     }
 
