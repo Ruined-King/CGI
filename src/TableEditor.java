@@ -33,14 +33,14 @@ public class TableEditor {
     private List<String> newlyCreatedColumns;
     private Map<String, List<String>> newColumnData;
 
-    // UI Components
+    
     private Stage editorStage;
     private TextField columnNameField;
     private ToggleGroup operationTypeGroup;
     private RadioButton mathOperationRadio;
     private RadioButton conditionalOperationRadio;
 
-    // Math Operation Components
+    
     private VBox mathOperationPane;
     private VBox mathOperationsContainer;
     private List<MathOperationRow> mathOperations;
@@ -48,12 +48,12 @@ public class TableEditor {
 
     private Map<String, Double> calculationResults;
 
-    // Conditional Operation Components
+    
     private VBox conditionalOperationPane;
     private ComboBox<String> conditionColumnCombo;
     private ComboBox<String> conditionOperatorCombo;
     private TextField conditionValueField;
-    private TextField conditionValueField2; // For Between operator
+    private TextField conditionValueField2; 
     private Label conditionAndLabel;
     private TextField trueOutputField;
     private TextField falseOutputField;
@@ -64,10 +64,10 @@ public class TableEditor {
     private HBox conditionRow1;
     private HBox conditionRow2;
 
-    // Available math operators
+    
     private final String[] MATH_OPERATORS = {"+", "-", "*", "/", "%", "^"};
 
-    // Available condition operators (from FilterOperations)
+    
     private final String[] CONDITION_OPERATORS = {
             "Equals", "IsEmpty", "IsFull", "Has",
             "LessThan", "LessOrEqual", "GreaterThan", "GreaterOrEqual", "Between"
@@ -78,11 +78,12 @@ public class TableEditor {
         this.tableController = tableController;
         this.filterManager = filterManager;
         this.mathOperations = new ArrayList<>();
-        this.newlyCreatedColumns = new ArrayList<>();
+        this.newlyCreatedColumns = new ArrayList<>(); 
         this.newColumnData = new HashMap<>(); 
     }
 
     public void showEditor() {
+        
         updateFilteredData();
 
         if (filteredRows.isEmpty()) {
@@ -95,10 +96,11 @@ public class TableEditor {
     }
 
     private void updateFilteredData() {
-      
+        
         List<String> allHeaders = tableController.getAllHeaders(); 
         List<ObservableList<String>> allRows = tableController.getAllRows(); 
 
+        
         headers = new ArrayList<>(allHeaders);
         filteredRows = new ArrayList<>();
 
@@ -108,15 +110,19 @@ public class TableEditor {
             }
         }
 
+        
         if (!newlyCreatedColumns.isEmpty()) {
             for (String newColumn : newlyCreatedColumns) {
                 if (!headers.contains(newColumn)) {
                     headers.add(newColumn);
+
+                    
                     List<String> columnData = newColumnData.get(newColumn);
                     for (int i = 0; i < filteredRows.size(); i++) {
                         ObservableList<String> row = filteredRows.get(i);
                         List<String> extendedRow = new ArrayList<>(row);
 
+                        
                         int originalRowIndex = findOriginalRowIndex(row, allRows);
 
                         if (columnData != null && originalRowIndex >= 0 && originalRowIndex < columnData.size()) {
@@ -131,7 +137,7 @@ public class TableEditor {
             }
         }
 
-        // Debug output
+        
         System.out.println("DEBUG: Headers count: " + headers.size());
         System.out.println("DEBUG: Filtered rows count: " + filteredRows.size());
         if (!filteredRows.isEmpty()) {
@@ -161,13 +167,13 @@ public class TableEditor {
     }
     private List<String> getAllAvailableColumns() {
         List<String> allColumns = new ArrayList<>(headers);
-        // Remove duplicates that might have been added
+        
         return new ArrayList<>(new HashSet<>(allColumns));
     }
     private void updateAllDropdowns() {
         List<String> availableColumns = getAllAvailableColumns();
 
-        // Update conditional operation dropdowns
+        
         if (conditionColumnCombo != null) {
             String selectedCondition = conditionColumnCombo.getValue();
             conditionColumnCombo.setItems(FXCollections.observableArrayList(availableColumns));
@@ -192,7 +198,7 @@ public class TableEditor {
             }
         }
 
-        // Update math operation dropdowns
+        
         updateAllMathOperationDropdowns();
     }
 
@@ -210,23 +216,23 @@ public class TableEditor {
         mainLayout.setPadding(new Insets(25));
         mainLayout.setStyle("-fx-background: linear-gradient(to bottom right, #000000, #1a0000, #8b0000);");
 
-        // Header with warning
+        
         VBox headerSection = createHeaderSection();
 
-        // Column name input
+        
         VBox columnNameSection = createColumnNameSection();
 
-        // Operation type selection
+        
         VBox operationTypeSection = createOperationTypeSection();
 
-        // Operation configuration panes
+        
         createMathOperationPane();
         createConditionalOperationPane();
 
-        // Buttons
+        
         HBox buttonSection = createButtonSection();
 
-        // Scroll pane for main content
+        
         VBox contentBox = new VBox(15);
         contentBox.getChildren().addAll(
                 headerSection,
@@ -263,11 +269,11 @@ public class TableEditor {
         shadow.setRadius(5);
         title.setEffect(shadow);
 
-        // Warning message
+        
         Text warningText = new Text("⚠️ IMPORTANT: This editor works with the currently filtered table data!\n" +
                 "(" + filteredRows.size() + " rows, " + headers.size() + " columns)");
         warningText.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 12));
-        warningText.setFill(Color.rgb(255, 204, 0)); // Orange color for warning
+        warningText.setFill(Color.rgb(255, 204, 0)); 
         warningText.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
         headerSection.getChildren().addAll(title, warningText);
@@ -312,7 +318,7 @@ public class TableEditor {
         conditionalOperationRadio.setTextFill(Color.WHITE);
         conditionalOperationRadio.setFont(Font.font("Arial", FontWeight.NORMAL, 12));
 
-        // Add listeners to show/hide appropriate panes
+        
         operationTypeGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
             boolean isMath = newToggle == mathOperationRadio;
             mathOperationPane.setVisible(isMath);
@@ -345,7 +351,7 @@ public class TableEditor {
 
         mathOperationPane.getChildren().addAll(label, instructions, mathOperationsContainer, addOperationButton);
 
-        // Add initial operation
+        
         addMathOperation();
     }
 
@@ -359,7 +365,7 @@ public class TableEditor {
         label.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         label.setFill(Color.WHITE);
 
-        // Condition setup
+        
         VBox conditionBox = new VBox(8);
         Text conditionLabel = new Text("Condition:");
         conditionLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 12));
@@ -382,7 +388,7 @@ public class TableEditor {
 
         conditionRow1.getChildren().addAll(conditionColumnCombo, conditionOperatorCombo, conditionValueField);
 
-        // Second value field for "Between" operator (initially hidden)
+        
         conditionRow2 = new HBox(10);
 
         conditionAndLabel = new Label("and");
@@ -397,7 +403,7 @@ public class TableEditor {
         conditionRow2.setVisible(false);
         conditionRow2.setManaged(false);
 
-        // Add listener to show/hide second value field for "Between" operator
+        
         conditionOperatorCombo.setOnAction(e -> {updateConditionValueFields();
             boolean isBetween = "Between".equals(conditionOperatorCombo.getValue());
             conditionRow2.setVisible(isBetween);
@@ -406,7 +412,7 @@ public class TableEditor {
 
         conditionBox.getChildren().addAll(conditionLabel, conditionRow1, conditionRow2);
 
-        // Output configuration
+        
         VBox outputBox = createOutputConfiguration();
 
         conditionalOperationPane.getChildren().addAll(label, conditionBox, outputBox);
@@ -414,17 +420,17 @@ public class TableEditor {
     private void updateConditionValueFields() {
         String operator = conditionOperatorCombo.getValue();
         if (operator != null) {
-            // Hide/show first value field
+            
             boolean needsValue1 = !("IsEmpty".equals(operator) || "IsFull".equals(operator));
             conditionValueField.setVisible(needsValue1);
             conditionValueField.setManaged(needsValue1);
 
-            // Hide/show second value field (only for Between)
+            
             boolean needsValue2 = "Between".equals(operator);
             conditionRow2.setVisible(needsValue2);
             conditionRow2.setManaged(needsValue2);
 
-            // Clear fields when hidden
+            
             if (!needsValue1) {
                 conditionValueField.clear();
             }
@@ -440,11 +446,11 @@ public class TableEditor {
         outputLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 12));
         outputLabel.setFill(Color.WHITE);
 
-        // True output
+        
         VBox trueBox = new VBox(5);
         Text trueLabel = new Text("If condition is TRUE, output:");
         trueLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 11));
-        trueLabel.setFill(Color.rgb(144, 238, 144)); // Light green
+        trueLabel.setFill(Color.rgb(144, 238, 144)); 
 
         trueOutputGroup = new ToggleGroup();
         RadioButton trueTextRadio = new RadioButton("Text value:");
@@ -462,7 +468,7 @@ public class TableEditor {
         trueColumnCombo = new ComboBox<>();
         trueColumnCombo.setPromptText("Select column...");
         trueColumnCombo.setStyle(createComboBoxStyle());
-        trueColumnCombo.setItems(FXCollections.observableArrayList(getAllAvailableColumns())); // Changed this line
+        trueColumnCombo.setItems(FXCollections.observableArrayList(getAllAvailableColumns())); 
         trueColumnCombo.setVisible(false);
         trueColumnCombo.setManaged(false);
 
@@ -476,11 +482,11 @@ public class TableEditor {
 
         trueBox.getChildren().addAll(trueLabel, trueTextRadio, trueOutputField, trueColumnRadio, trueColumnCombo);
 
-        // False output (similar changes)
+        
         VBox falseBox = new VBox(5);
         Text falseLabel = new Text("If condition is FALSE, output:");
         falseLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 11));
-        falseLabel.setFill(Color.rgb(255, 182, 193)); // Light pink
+        falseLabel.setFill(Color.rgb(255, 182, 193)); 
 
         falseOutputGroup = new ToggleGroup();
         RadioButton falseTextRadio = new RadioButton("Text value:");
@@ -498,7 +504,7 @@ public class TableEditor {
         falseColumnCombo = new ComboBox<>();
         falseColumnCombo.setPromptText("Select column...");
         falseColumnCombo.setStyle(createComboBoxStyle());
-        falseColumnCombo.setItems(FXCollections.observableArrayList(getAllAvailableColumns())); // Changed this line
+        falseColumnCombo.setItems(FXCollections.observableArrayList(getAllAvailableColumns())); 
         falseColumnCombo.setVisible(false);
         falseColumnCombo.setManaged(false);
 
@@ -518,7 +524,7 @@ public class TableEditor {
     private void addMathOperation() {
         List<String> previousResults = new ArrayList<>();
 
-        // Collect names of previous operations
+        
         for (int i = 0; i < mathOperations.size(); i++) {
             String name = mathOperations.get(i).getOperationName();
             if (name != null && !name.trim().isEmpty()) {
@@ -526,11 +532,11 @@ public class TableEditor {
             }
         }
 
-        MathOperationRow row = new MathOperationRow(getAllAvailableColumns(), previousResults); // Changed this line
+        MathOperationRow row = new MathOperationRow(getAllAvailableColumns(), previousResults); 
         row.setOperationLabel((mathOperations.size() + 1) + ":");
         row.setRemoveAction(() -> removeMathOperation(row));
 
-        // Add listener to update other rows when this operation name changes
+        
         row.getOperationNameField().textProperty().addListener((obs, oldVal, newVal) -> {
             updateAllMathOperationDropdowns();
         });
@@ -542,26 +548,26 @@ public class TableEditor {
         mathOperations.remove(row);
         mathOperationsContainer.getChildren().remove(row.getRowPane());
 
-        // Update operation labels
+        
         for (int i = 0; i < mathOperations.size(); i++) {
             mathOperations.get(i).setOperationLabel((i + 1) + ":");
         }
 
-        // Update all dropdowns to reflect the change
+        
         updateAllMathOperationDropdowns();
 
-        // Ensure at least one operation remains
+        
         if (mathOperations.isEmpty()) {
             addMathOperation();
         }
     }
     private void updateAllMathOperationDropdowns() {
-        List<String> availableColumns = getAllAvailableColumns(); // Use new method
+        List<String> availableColumns = getAllAvailableColumns(); 
 
         for (int i = 0; i < mathOperations.size(); i++) {
             List<String> previousResults = new ArrayList<>();
 
-            // Only include results from operations BEFORE this one
+            
             for (int j = 0; j < i; j++) {
                 String name = mathOperations.get(j).getOperationName();
                 if (name != null && !name.trim().isEmpty()) {
@@ -569,7 +575,7 @@ public class TableEditor {
                 }
             }
 
-            mathOperations.get(i).updateAvailableValues(availableColumns, previousResults); // Pass availableColumns instead of headers
+            mathOperations.get(i).updateAvailableValues(availableColumns, previousResults); 
         }
     }
 
@@ -607,7 +613,7 @@ public class TableEditor {
         }
 
         try {
-            // Generate data for ALL rows (not just filtered ones)
+            
             List<ObservableList<String>> allRows = tableController.getAllRows();
             List<String> allHeaders = tableController.getAllHeaders();
 
@@ -615,7 +621,7 @@ public class TableEditor {
 
             for (ObservableList<String> row : allRows) {
                 try {
-                    // Temporarily set the current row context for calculations
+                    
                     String cellValue = generateCellValue(row, allHeaders);
                     newColumnDataForAllRows.add(cellValue);
                 } catch (Exception ex) {
@@ -624,21 +630,21 @@ public class TableEditor {
                 }
             }
 
-            // Store the new column data for this session
+            
             this.newlyCreatedColumns.add(columnName);
             this.newColumnData.put(columnName, new ArrayList<>(newColumnDataForAllRows));
 
-            // Add the new column to the table controller
+            
             tableController.addNewColumn(columnName, newColumnDataForAllRows);
 
-            // Update local data and all dropdowns
+            
             updateFilteredData();
             updateAllDropdowns();
 
             showAlert("Success", "Column '" + columnName + "' has been added successfully!\n" +
                     "You can now use it in other operations within this editor session.");
 
-            // Clear the column name field for next operation
+            
             columnNameField.clear();
 
         } catch (Exception ex) {
@@ -663,7 +669,7 @@ public class TableEditor {
         Map<String, Double> rowCalculationResults = new HashMap<>();
         double finalResult = 0;
 
-        // Execute operations in sequence
+        
         for (MathOperationRow operation : mathOperations) {
             String operationName = operation.getOperationName();
             String column1Name = operation.getColumn1();
@@ -674,19 +680,19 @@ public class TableEditor {
                 throw new Exception("Incomplete operation: " + operationName);
             }
 
-            // Get first value
+            
             double value1 = getValueForRow(row, rowHeaders, column1Name, rowCalculationResults);
 
-            // Get second value (if needed)
+            
             double value2 = 0;
             if (column2Name != null && !column2Name.trim().isEmpty()) {
                 value2 = getValueForRow(row, rowHeaders, column2Name, rowCalculationResults);
             }
 
-            // Perform calculation
+            
             double result = performMathOperation(value1, value2, operator);
 
-            // Store result for future operations
+            
             rowCalculationResults.put(operationName, result);
             finalResult = result;
         }
@@ -694,14 +700,14 @@ public class TableEditor {
         return finalResult;
     }
 
-    // Helper method to get value from specific row context
+    
     private double getValueForRow(ObservableList<String> row, List<String> rowHeaders, String valueName, Map<String, Double> calculationResults) throws Exception {
-        // Check if it's a previous calculation result
+        
         if (calculationResults.containsKey(valueName)) {
             return calculationResults.get(valueName);
         }
 
-        // Otherwise, it's a column value
+        
         return getNumericValueFromRow(row, rowHeaders, valueName);
     }
 
@@ -729,7 +735,7 @@ public class TableEditor {
         }
     }
 
-    // Enhanced conditional generation for specific row
+    
     private String generateConditionalCellValue(ObservableList<String> row, List<String> rowHeaders) throws Exception {
         String column = conditionColumnCombo.getValue();
         String operator = conditionOperatorCombo.getValue();
@@ -740,7 +746,7 @@ public class TableEditor {
             throw new Exception("Please select both column and operator for the condition.");
         }
 
-        // Find column index in the provided headers
+        
         int columnIndex = rowHeaders.indexOf(column);
         if (columnIndex == -1) {
             throw new Exception("Column '" + column + "' not found in headers: " + rowHeaders);
@@ -761,16 +767,16 @@ public class TableEditor {
         return getConditionalOutputForRow(conditionResult, row, rowHeaders);
     }
 
-    // Enhanced conditional output for specific row
+    
     private String getConditionalOutputForRow(boolean conditionResult, ObservableList<String> row, List<String> rowHeaders) {
         try {
             if (conditionResult) {
-                // True case
+                
                 RadioButton selectedTrue = (RadioButton) trueOutputGroup.getSelectedToggle();
                 if (selectedTrue != null && selectedTrue.getText().startsWith("Text value:")) {
                     return trueOutputField.getText() != null ? trueOutputField.getText() : "";
                 } else {
-                    // Column value
+                    
                     String columnName = trueColumnCombo.getValue();
                     if (columnName != null) {
                         int columnIndex = rowHeaders.indexOf(columnName);
@@ -781,12 +787,12 @@ public class TableEditor {
                     }
                 }
             } else {
-                // False case
+                
                 RadioButton selectedFalse = (RadioButton) falseOutputGroup.getSelectedToggle();
                 if (selectedFalse != null && selectedFalse.getText().startsWith("Text value:")) {
                     return falseOutputField.getText() != null ? falseOutputField.getText() : "";
                 } else {
-                    // Column value
+                    
                     String columnName = falseColumnCombo.getValue();
                     if (columnName != null) {
                         int columnIndex = rowHeaders.indexOf(columnName);
@@ -810,7 +816,7 @@ public class TableEditor {
             List<String> columnData = generateColumnData();
             if (columnData == null) return;
 
-            // Show preview dialog
+            
             showPreviewDialog(columnData);
 
         } catch (Exception ex) {
@@ -833,7 +839,7 @@ public class TableEditor {
             return null;
         }
 
-        // Validate all operations
+        
         for (MathOperationRow op : mathOperations) {
             if (!op.isValid()) {
                 showAlert("Error", "Please complete all math operation fields.\nIncomplete operation: " + op.getOperationString());
@@ -841,7 +847,7 @@ public class TableEditor {
             }
         }
 
-        // Check for duplicate operation names
+        
         Set<String> operationNames = new HashSet<>();
         for (MathOperationRow op : mathOperations) {
             String name = op.getOperationName();
@@ -867,10 +873,12 @@ public class TableEditor {
     }
 
     private double getValue(ObservableList<String> row, String valueName) throws Exception {
+        
         if (calculationResults.containsKey(valueName)) {
             return calculationResults.get(valueName);
         }
 
+        
         return getNumericValue(row, valueName);
     }
 
@@ -879,7 +887,7 @@ public class TableEditor {
             throw new Exception("No operations defined");
         }
 
-        // Start with first operation
+        
         MathOperationRow firstOp = mathOperations.get(0);
         double result = getNumericValue(row, firstOp.getColumn1());
 
@@ -889,7 +897,7 @@ public class TableEditor {
         }
 
 
-        // Apply remaining operations
+        
         for (int i = 1; i < mathOperations.size(); i++) {
             MathOperationRow op = mathOperations.get(i);
             if (op.getColumn1() != null && !op.getColumn1().isEmpty()) {
@@ -903,6 +911,7 @@ public class TableEditor {
 
 
 
+    
     private double calculateEnhancedMathResult(ObservableList<String> row) throws Exception {
         if (mathOperations.isEmpty()) {
             throw new Exception("No operations defined");
@@ -911,7 +920,7 @@ public class TableEditor {
         calculationResults = new HashMap<>();
         double finalResult = 0;
 
-        // Execute operations in sequence
+        
         for (MathOperationRow operation : mathOperations) {
             String operationName = operation.getOperationName();
             String column1Name = operation.getColumn1();
@@ -922,21 +931,21 @@ public class TableEditor {
                 throw new Exception("Incomplete operation: " + operationName);
             }
 
-            // Get first value
+            
             double value1 = getValue(row, column1Name);
 
-            // Get second value (if needed)
+            
             double value2 = 0;
             if (column2Name != null && !column2Name.trim().isEmpty()) {
                 value2 = getValue(row, column2Name);
             }
 
-            // Perform calculation
+            
             double result = performMathOperation(value1, value2, operator);
 
-            // Store result for future operations
+            
             calculationResults.put(operationName, result);
-            finalResult = result; // The last operation's result is the final result
+            finalResult = result; 
         }
 
         return finalResult;
@@ -944,6 +953,7 @@ public class TableEditor {
 
 
     private double getNumericValue(ObservableList<String> row, String columnName) throws Exception {
+        
         int columnIndex = headers.indexOf(columnName);
 
         if (columnIndex == -1) {
@@ -958,7 +968,7 @@ public class TableEditor {
 
         String value = row.get(columnIndex);
         if (value == null || value.trim().isEmpty() || value.trim().equalsIgnoreCase("null")) {
-            return 0.0; // Default to 0 for empty values
+            return 0.0; 
         }
 
         try {
@@ -999,7 +1009,7 @@ public class TableEditor {
             return null;
         }
 
-        // Validate required values based on operator
+        
         boolean needsValue1 = !("IsEmpty".equals(operator) || "IsFull".equals(operator));
         if (needsValue1 && value1.isEmpty()) {
             showAlert("Error", "Please enter a value for the condition.");
@@ -1011,10 +1021,10 @@ public class TableEditor {
             return null;
         }
 
-        // Ensure we have the latest filtered data
+        
         updateFilteredData();
 
-        // Find column index in the CURRENT filtered headers
+        
         int columnIndex = headers.indexOf(column);
         if (columnIndex == -1) {
             showAlert("Error", "Column '" + column + "' not found in current filtered view.\n" +
@@ -1031,7 +1041,7 @@ public class TableEditor {
         for (int i = 0; i < filteredRows.size(); i++) {
             ObservableList<String> row = filteredRows.get(i);
 
-            // Validate row structure
+            
             if (columnIndex >= row.size()) {
                 System.err.println("ERROR: Column index " + columnIndex +
                         " out of bounds for row " + i + " (size: " + row.size() + ")");
@@ -1051,7 +1061,7 @@ public class TableEditor {
                 String output = getConditionalOutput(conditionResult, row);
                 result.add(output);
 
-                // Debug first few rows
+                
                 if (i < 3) {
                     System.out.println("DEBUG Row " + i + ": Value='" + rowValue +
                             "', Condition=" + conditionResult + ", Output='" + output + "'");
@@ -1073,7 +1083,7 @@ public class TableEditor {
             System.out.println("First row size: " + filteredRows.get(0).size());
             System.out.println("First row content: " + filteredRows.get(0));
 
-            // Print a sample of data for debugging
+            
             for (int i = 0; i < Math.min(3, filteredRows.size()); i++) {
                 ObservableList<String> row = filteredRows.get(i);
                 System.out.println("Row " + i + " (" + row.size() + " cols): " + row);
@@ -1097,10 +1107,12 @@ public class TableEditor {
     private String getConditionalOutput(boolean conditionResult, ObservableList<String> row) {
         try {
             if (conditionResult) {
+                
                 RadioButton selectedTrue = (RadioButton) trueOutputGroup.getSelectedToggle();
                 if (selectedTrue != null && selectedTrue.getText().startsWith("Text value:")) {
                     return trueOutputField.getText() != null ? trueOutputField.getText() : "";
                 } else {
+                    
                     String columnName = trueColumnCombo.getValue();
                     if (columnName != null) {
                         int columnIndex = headers.indexOf(columnName);
@@ -1111,10 +1123,12 @@ public class TableEditor {
                     }
                 }
             } else {
+                
                 RadioButton selectedFalse = (RadioButton) falseOutputGroup.getSelectedToggle();
                 if (selectedFalse != null && selectedFalse.getText().startsWith("Text value:")) {
                     return falseOutputField.getText() != null ? falseOutputField.getText() : "";
                 } else {
+                    
                     String columnName = falseColumnCombo.getValue();
                     if (columnName != null) {
                         int columnIndex = headers.indexOf(columnName);
@@ -1166,7 +1180,7 @@ public class TableEditor {
         previewStage.show();
     }
 
-    // Helper methods for styling
+    
     private String createSectionStyle() {
         return "-fx-background-color: rgba(0, 0, 0, 0.3); " +
                 "-fx-background-radius: 8; " +
@@ -1259,20 +1273,20 @@ public class TableEditor {
         mainLayout.setPadding(new Insets(25));
         mainLayout.setStyle("-fx-background: linear-gradient(to bottom right, #000000, #1a0000, #8b0000);");
 
-        // Header with warning
+        
         VBox headerSection = createHeaderSection();
 
-        // Column name input
+        
         VBox columnNameSection = createColumnNameSection();
 
-        // Operation type selection
+        
         VBox operationTypeSection = createOperationTypeSection();
 
-        // Operation configuration panes
+        
         createMathOperationPane();
         createConditionalOperationPane();
 
-        // Buttons
+        
         HBox buttonSection = createButtonSection();
 
         VBox contentBox = new VBox(15);
