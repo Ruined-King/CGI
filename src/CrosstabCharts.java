@@ -114,7 +114,7 @@ public class CrosstabCharts {
         Map<String, Integer> filteredTotals = totals.entrySet().stream()
                 .filter(entry -> entry.getValue() > 0)
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                .limit(20) // Limit to top 20 values to avoid memory issues
+                .limit(20)
                 .collect(LinkedHashMap::new,
                         (map, entry) -> map.put(entry.getKey(), entry.getValue()),
                         LinkedHashMap::putAll);
@@ -127,8 +127,8 @@ public class CrosstabCharts {
         PieChart pieChart = new PieChart(pieChartData);
         pieChart.setTitle("Distribution of " + currentYColumn +
                 (filteredTotals.size() < totals.size() ? " (Top " + filteredTotals.size() + " values)" : ""));
-        pieChart.setLabelLineLength(15); 
-        pieChart.setLegendVisible(false); 
+        pieChart.setLabelLineLength(15);
+        pieChart.setLegendVisible(false);
         pieChart.setPrefSize(800, 600);
         pieChart.setMinSize(600, 450);
 
@@ -192,10 +192,10 @@ public class CrosstabCharts {
         legendGrid.setVgap(8);
         legendGrid.setAlignment(Pos.TOP_LEFT);
 
-        int maxItemsPerColumn = Math.min(10, data.size()); // Limit items per column
+        int maxItemsPerColumn = Math.min(10, data.size());
         int columns = (int) Math.ceil((double) data.size() / maxItemsPerColumn);
 
-        for (int i = 0; i < Math.min(data.size(), 50); i++) { 
+        for (int i = 0; i < Math.min(data.size(), 50); i++) {
             PieChart.Data item = data.get(i);
 
             int row = i % maxItemsPerColumn;
@@ -211,7 +211,7 @@ public class CrosstabCharts {
 
             String labelText = item.getName();
             if (labelText.length() > 25) {
-                labelText = labelText.substring(0, 22) + "..."; // Truncate long labels
+                labelText = labelText.substring(0, 22) + "...";
             }
 
             Label itemLabel = new Label(labelText);
@@ -410,27 +410,23 @@ public class CrosstabCharts {
             int colorIndex = 0;
             for (String yValue : allYValues) {
                 XYChart.Series<String, Number> series = new XYChart.Series<>();
-                series.setName(yValue); // Legend shows Y values
+                series.setName(yValue);
 
                 for (String xValue : sortedXValues) {
                     Map<String, Integer> rowData = data.get(xValue);
                     Integer count = rowData != null ? rowData.getOrDefault(yValue, 0) : 0;
 
-                    // Each data point contributes to the stack for this X category
                     XYChart.Data<String, Number> dataPoint = new XYChart.Data<>(xValue, count);
                     series.getData().add(dataPoint);
                 }
 
                 stackedBarChart.getData().add(series);
 
-                // Apply colors to each series with proper stacking colors
                 final String color = colorPalette[colorIndex % colorPalette.length];
                 final int seriesIndex = colorIndex;
 
-                // Style the series with custom colors for proper stacking
                 javafx.application.Platform.runLater(() -> {
                     try {
-                        // Apply unique color styling for each series segment
                         String cssSelector = ".default-color" + seriesIndex + ".chart-bar";
                         stackedBarChart.lookupAll(cssSelector).forEach(node -> {
                             node.setStyle(
@@ -441,7 +437,6 @@ public class CrosstabCharts {
                             );
                         });
 
-                        // Also style individual data points when they become available
                         for (XYChart.Data<String, Number> dataPoint : series.getData()) {
                             if (dataPoint.getNode() != null) {
                                 dataPoint.getNode().setStyle(
@@ -460,15 +455,12 @@ public class CrosstabCharts {
 
                 colorIndex++;
             }
-            // Chart styling
-            stackedBarChart.setCategoryGap(20.0); // Space between bars
+            stackedBarChart.setCategoryGap(20.0);
             stackedBarChart.setLegendVisible(true);
         }
 
-        // Overall chart styling
         stackedBarChart.setStyle("-fx-background-color: white;");
 
-        // Ensure proper rendering
         javafx.application.Platform.runLater(() -> {
             try {
                 stackedBarChart.applyCss();
@@ -483,7 +475,7 @@ public class CrosstabCharts {
             }
         });
 
-        stackedBarChart.setLegendVisible(false); // Hide default legend
+        stackedBarChart.setLegendVisible(false);
         VBox chartWithCustomLegend = new VBox(10);
         chartWithCustomLegend.setAlignment(Pos.CENTER);
         chartWithCustomLegend.getChildren().addAll(stackedBarChart, createTiltedStackedBarLegend(allYValues, colorPalette));
@@ -505,12 +497,10 @@ public class CrosstabCharts {
         container.setStyle("-fx-background-color: white;");
 
         if (totalOnly) {
-            // Create combo chart using totals
             Map<String, Integer> rowTotals = crosstabData.getRowTotals();
             Map<String, Integer> colTotals = crosstabData.getColumnTotals();
             Map<String, Integer> cumulativeEffective = crosstabData.getCumulativeEffective();
 
-            // Get sorted x-axis values
             List<String> xValues;
             if (useMonthlyConversion && crosstabData.isDateColumn(currentXColumn)) {
                 Set<String> completeMonthRange = crosstabData.createCompleteMonthRange(currentXColumn, currentYColumn, true);
@@ -520,7 +510,6 @@ public class CrosstabCharts {
                 Collections.sort(xValues);
             }
 
-            // Create combo chart with cumulative effective option
             ComboChart comboChart = new ComboChart(
                     rowTotals,
                     rowTotals,
@@ -534,7 +523,6 @@ public class CrosstabCharts {
             VBox chartContainer = comboChart.getChartContainer();
             container.getChildren().add(chartContainer);
 
-            // Add data summary
             Label summaryLabel = new Label(String.format(
                     "📊 Summary: %d %s categories, %d %s categories, Grand Total: %d",
                     rowTotals.size(), currentXColumn,
@@ -574,7 +562,7 @@ public class CrosstabCharts {
         private final double CHART_WIDTH = 1200;
         private final double CHART_HEIGHT = 700;
         private final double MARGIN_LEFT = 80;
-        private final double MARGIN_RIGHT = 80; // Increased for right axis
+        private final double MARGIN_RIGHT = 80;
         private final double MARGIN_TOP = 50;
         private final double MARGIN_BOTTOM = 200;
         private final double PLOT_WIDTH = CHART_WIDTH - MARGIN_LEFT - MARGIN_RIGHT;
@@ -582,7 +570,6 @@ public class CrosstabCharts {
 
         private final String[] COLORS = {"#3498db", "#e74c3c", "#2ecc71", "#f39c12", "#9b59b6", "#1abc9c", "#e67e22", "#34495e"};
 
-        // Updated constructor to include cumulative data
         public ComboChart(Map<String, Integer> rowTotals, Map<String, Integer> colTotals,
                           List<String> xValues, String xColumnName, String yColumnName,
                           Map<String, Integer> cumulativeEffective, boolean useCumulativeForLine) {
@@ -595,7 +582,6 @@ public class CrosstabCharts {
             this.useCumulativeForLine = useCumulativeForLine;
         }
 
-        // Backward compatibility constructor
         public ComboChart(Map<String, Integer> rowTotals, Map<String, Integer> colTotals,
                           List<String> xValues, String xColumnName, String yColumnName) {
             this(rowTotals, colTotals, xValues, xColumnName, yColumnName, null, false);
@@ -608,7 +594,6 @@ public class CrosstabCharts {
             gc.setFill(Color.WHITE);
             gc.fillRect(0, 0, CHART_WIDTH, CHART_HEIGHT);
 
-            // Calculate separate max values for dual scale
             int maxBarValue = rowTotals.values().stream().mapToInt(Integer::intValue).max().orElse(0);
             int maxLineValue;
 
@@ -640,7 +625,6 @@ public class CrosstabCharts {
             int maxRow = rowTotals.values().stream().mapToInt(Integer::intValue).max().orElse(0);
             int maxCol;
 
-            // Use cumulative effective values for line if enabled, otherwise use column totals
             if (useCumulativeForLine && !cumulativeEffective.isEmpty()) {
                 maxCol = cumulativeEffective.values().stream().mapToInt(Integer::intValue).max().orElse(0);
             } else {
@@ -682,24 +666,19 @@ public class CrosstabCharts {
                 double x = MARGIN_LEFT + (i + 0.5) * barWidth;
                 String label = xValues.get(i);
 
-                // Save the current transform
                 gc.save();
 
-                // Move to the label position
                 gc.translate(x, CHART_HEIGHT - MARGIN_BOTTOM + 10);
-                gc.rotate(-45); // 45 degrees inclined
+                gc.rotate(-45);
 
                 gc.setTextAlign(TextAlignment.CENTER);
                 gc.setTextAlign(TextAlignment.RIGHT);
 
-                // Draw the rotated text
                 gc.fillText(label, 0, 0);
 
-                // Restore the transform
                 gc.restore();
             }
 
-            // Y-axis title
             gc.save();
             gc.translate(20, CHART_HEIGHT / 2);
             gc.rotate(-Math.PI / 2);
@@ -707,7 +686,6 @@ public class CrosstabCharts {
             gc.fillText("Count", 0, 0);
             gc.restore();
 
-            // X-axis title
             gc.setTextAlign(TextAlignment.CENTER);
             gc.fillText(xColumnName, CHART_WIDTH / 2, CHART_HEIGHT - 10);
         }
@@ -716,21 +694,18 @@ public class CrosstabCharts {
             gc.setStroke(Color.LIGHTGRAY);
             gc.setLineWidth(0.5);
 
-            // Horizontal grid lines
             int gridLines = 5;
             for (int i = 0; i <= gridLines; i++) {
                 double y = MARGIN_TOP + (i * PLOT_HEIGHT / gridLines);
                 gc.strokeLine(MARGIN_LEFT, y, CHART_WIDTH - MARGIN_RIGHT, y);
 
-                // Left Y-axis values (for bars)
-                gc.setFill(Color.web(COLORS[0])); // Bar color
+                gc.setFill(Color.web(COLORS[0]));
                 gc.setTextAlign(TextAlignment.RIGHT);
                 int barValue = maxBarValue - (i * maxBarValue / gridLines);
                 gc.fillText(String.valueOf(barValue), MARGIN_LEFT - 10, y + 5);
 
-                // Right Y-axis values (for line) - only if using cumulative and different scale
                 if (useCumulativeForLine && maxLineValue != maxBarValue) {
-                    gc.setFill(Color.web(COLORS[1])); // Line color
+                    gc.setFill(Color.web(COLORS[1]));
                     gc.setTextAlign(TextAlignment.LEFT);
                     int lineValue = maxLineValue - (i * maxLineValue / gridLines);
                     gc.fillText(String.valueOf(lineValue), CHART_WIDTH - MARGIN_RIGHT + 10, y + 5);
@@ -739,32 +714,26 @@ public class CrosstabCharts {
         }
 
         private void drawBars(GraphicsContext gc, int maxValue) {
-            double barWidth = PLOT_WIDTH / xValues.size() * 0.6; // Individual bar width
-            double spacing = PLOT_WIDTH / xValues.size(); // Space between bars
+            double barWidth = PLOT_WIDTH / xValues.size() * 0.6;
+            double spacing = PLOT_WIDTH / xValues.size();
 
-            // Draw individual bars for each X value
             for (int i = 0; i < xValues.size(); i++) {
                 String xValue = xValues.get(i);
                 int count = rowTotals.getOrDefault(xValue, 0);
 
                 if (count > 0) {
-                    // Calculate bar position and height
-                    double barX = MARGIN_LEFT + i * spacing + (spacing - barWidth) / 2; // Center bar in its space
+                    double barX = MARGIN_LEFT + i * spacing + (spacing - barWidth) / 2;
                     double barHeight = (double) count / maxValue * PLOT_HEIGHT;
                     double barY = CHART_HEIGHT - MARGIN_BOTTOM - barHeight;
 
-                    // Set color for this bar (use first color consistently)
                     gc.setFill(Color.web(COLORS[0]));
 
-                    // Draw the bar
                     gc.fillRect(barX, barY, barWidth, barHeight);
 
-                    // Add border
                     gc.setStroke(Color.WHITE);
                     gc.setLineWidth(1);
                     gc.strokeRect(barX, barY, barWidth, barHeight);
 
-                    // Add value label on top of bar
                     gc.setFill(Color.BLACK);
                     gc.setFont(Font.font("Arial", 10));
                     gc.setTextAlign(TextAlignment.CENTER);
@@ -775,13 +744,11 @@ public class CrosstabCharts {
             }
         }
         private void drawLines(GraphicsContext gc, int maxValue) {
-            // Draw line for column totals or cumulative effective
-            Color lineColor = Color.web(COLORS[1]); // Use second color for line
+            Color lineColor = Color.web(COLORS[1]);
 
             gc.setStroke(lineColor);
             gc.setLineWidth(3);
 
-            // Calculate points based on the selected data source
             List<Double> xPoints = new ArrayList<>();
             List<Double> yPoints = new ArrayList<>();
 
@@ -802,18 +769,15 @@ public class CrosstabCharts {
                 yPoints.add(y);
             }
 
-            // Draw line segments
             for (int i = 0; i < xPoints.size() - 1; i++) {
                 gc.strokeLine(xPoints.get(i), yPoints.get(i),
                         xPoints.get(i + 1), yPoints.get(i + 1));
             }
 
-            // Draw points
             gc.setFill(lineColor);
             for (int i = 0; i < xPoints.size(); i++) {
                 gc.fillOval(xPoints.get(i) - 4, yPoints.get(i) - 4, 8, 8);
 
-                // Add white border to points
                 gc.setStroke(Color.WHITE);
                 gc.setLineWidth(2);
                 gc.strokeOval(xPoints.get(i) - 4, yPoints.get(i) - 4, 8, 8);
@@ -828,7 +792,6 @@ public class CrosstabCharts {
             legend.setPadding(new Insets(10));
             legend.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 5;");
 
-            // Bar legend
             HBox barItem = new HBox(8);
             barItem.setAlignment(Pos.CENTER_LEFT);
 
@@ -842,7 +805,6 @@ public class CrosstabCharts {
             barItem.getChildren().addAll(barSymbol, barLabel);
             legend.getChildren().add(barItem);
 
-            // Line legend
             HBox lineItem = new HBox(8);
             lineItem.setAlignment(Pos.CENTER_LEFT);
 
@@ -874,47 +836,39 @@ public class CrosstabCharts {
     }
 
     private void makeLineChartTransparent(LineChart<String, Number> lineChart) {
-        // Make the line chart mouse transparent so clicks go through to bar chart
         lineChart.setMouseTransparent(true);
 
-        // Additional transparency settings
         javafx.application.Platform.runLater(() -> {
             try {
-                // Make chart content transparent
                 if (lineChart.lookup(".chart-content") != null) {
                     lineChart.lookup(".chart-content").setStyle("-fx-background-color: transparent;");
                 }
 
-                // Make chart plot background transparent
                 if (lineChart.lookup(".chart-plot-background") != null) {
                     lineChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
                 }
 
-                // Hide axes
                 if (lineChart.lookup(".axis") != null) {
                     lineChart.lookup(".axis").setVisible(false);
                 }
 
             } catch (Exception e) {
-                // Ignore styling errors
             }
         });
     }
 
-    // Helper method to connect line points
     private HBox createCustomLegend(List<String> yValues, String[] colors) {
         HBox legendBox = new HBox(15);
         legendBox.setAlignment(Pos.CENTER);
         legendBox.setPadding(new Insets(10));
         legendBox.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-width: 1;");
 
-        // Bar series legend (first item)
         if (!yValues.isEmpty()) {
             HBox barLegend = new HBox(5);
             barLegend.setAlignment(Pos.CENTER_LEFT);
 
             javafx.scene.shape.Rectangle barRect = new javafx.scene.shape.Rectangle(15, 15);
-            barRect.setFill(javafx.scene.paint.Color.web("#3498db")); // Default bar color
+            barRect.setFill(javafx.scene.paint.Color.web("#3498db"));
 
             Label barLabel = new Label(yValues.get(0) + " (Bars)");
             barLabel.setFont(Font.font("Arial", 12));
@@ -923,7 +877,6 @@ public class CrosstabCharts {
             legendBox.getChildren().add(barLegend);
         }
 
-        // Line series legends
         for (int i = 1; i < Math.min(yValues.size(), 10); i++) {
             HBox lineLegend = new HBox(5);
             lineLegend.setAlignment(Pos.CENTER_LEFT);
@@ -971,7 +924,6 @@ public class CrosstabCharts {
         titleLabel.setTextFill(Color.WHITE);
         titleLabel.setFont(Font.font("Verdana", 16));
 
-        // Create checkboxes for chart types
         CheckBox barChartCB = new CheckBox("📊 Bar Chart");
         CheckBox pieChartCB = new CheckBox("🥧 Pie Chart");
         CheckBox lineChartCB = new CheckBox("📈 Line Chart (Evolution)");
@@ -979,7 +931,6 @@ public class CrosstabCharts {
         CheckBox comboChartCB = new CheckBox("📚📈 Combo Chart");
         CheckBox cumulativeChartCB = new CheckBox("📈📊 Cumulative Effective Chart");
 
-        // Style checkboxes
         styleGraphCheckBox(barChartCB);
         styleGraphCheckBox(pieChartCB);
         styleGraphCheckBox(lineChartCB);
@@ -987,13 +938,11 @@ public class CrosstabCharts {
         styleGraphCheckBox(comboChartCB);
         styleGraphCheckBox(cumulativeChartCB);
 
-   
         if (!totalOnly) {
             comboChartCB.setDisable(true);
             comboChartCB.setText("📚📈 Combo Chart (Only available in Total Mode)");
             comboChartCB.setStyle(comboChartCB.getStyle() + "-fx-opacity: 0.5;");
 
-          
             cumulativeChartCB.setDisable(true);
             cumulativeChartCB.setText("📈📊 Cumulative Effective Chart (Only available in Total Mode)");
             cumulativeChartCB.setStyle(cumulativeChartCB.getStyle() + "-fx-opacity: 0.5;");
@@ -1005,7 +954,6 @@ public class CrosstabCharts {
 
         }
 
-        // Total only info label
         Label totalInfoLabel = new Label();
         if (totalOnly) {
             String infoText = "📋 Total Only Mode: Charts will show aggregated totals only\n✅ Combo Chart Available!";
@@ -1013,17 +961,16 @@ public class CrosstabCharts {
                 infoText += "\n📈 Cumulative Effective data detected!";
             }
             totalInfoLabel.setText(infoText);
-            totalInfoLabel.setTextFill(Color.rgb(144, 238, 144)); // Light green
+            totalInfoLabel.setTextFill(Color.rgb(144, 238, 144));
             totalInfoLabel.setFont(Font.font("Verdana", 11));
             totalInfoLabel.setWrapText(true);
         } else {
             totalInfoLabel.setText("📋 Regular Mode: Use 'Total Only' to enable Combo Charts");
-            totalInfoLabel.setTextFill(Color.rgb(255, 193, 7)); // Yellow
+            totalInfoLabel.setTextFill(Color.rgb(255, 193, 7));
             totalInfoLabel.setFont(Font.font("Verdana", 11));
             totalInfoLabel.setWrapText(true);
         }
 
-        // Buttons
         HBox buttonBox = new HBox(15);
         buttonBox.setAlignment(Pos.CENTER);
 
@@ -1072,7 +1019,6 @@ public class CrosstabCharts {
         dialog.setScene(new Scene(layout));
         dialog.show();
     }
-
     private void styleGraphCheckBox(CheckBox checkBox) {
         checkBox.setTextFill(Color.WHITE);
         checkBox.setFont(Font.font("Verdana", 14));
