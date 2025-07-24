@@ -65,7 +65,7 @@ public class MathOperationRow {
         operatorCombo.setPromptText("Op");
         operatorCombo.setStyle(createComboBoxStyle());
         operatorCombo.setPrefWidth(50);
-        operatorCombo.setValue("+"); // Default operator
+        operatorCombo.setValue("+"); 
 
         column2Combo = new ComboBox<>();
         column2Combo.setPromptText("Value 2");
@@ -94,7 +94,7 @@ public class MathOperationRow {
                 removeButton
         );
 
-        // Set growth priorities
+        
         HBox.setHgrow(operationNameField, Priority.SOMETIMES);
         HBox.setHgrow(column1Combo, Priority.SOMETIMES);
         HBox.setHgrow(column2Combo, Priority.SOMETIMES);
