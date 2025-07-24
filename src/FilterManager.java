@@ -32,7 +32,7 @@ public class FilterManager {
     private CheckBox notCheckBox;
     private boolean isOrMode = false;
 
-    // Custom AutoComplete TextFields instead of ComboBoxes
+    
     private AutoCompleteTextField columnField;
     private AutoCompleteTextField operatorField;
     private AutoCompleteTextField valueField;
@@ -70,7 +70,7 @@ public class FilterManager {
             }
         });
 
-        // Initialize custom AutoComplete fields
+        
         columnField = new AutoCompleteTextField();
         operatorField = new AutoCompleteTextField();
         valueField = new AutoCompleteTextField();
@@ -108,10 +108,10 @@ public class FilterManager {
         andLabel.setVisible(false);
         andLabel.setManaged(false);
 
-        // Setup autocomplete data
+        
         setupAutoCompleteData();
 
-        // Setup field listeners
+        
         columnField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null && !newVal.trim().isEmpty()) {
                 updateAutoCompleteValues(newVal.trim());
@@ -196,7 +196,7 @@ public class FilterManager {
                 refreshActiveFiltersDisplay();
                 applyColumnAndRowFilters();
 
-                // Clear fields
+                
                 columnField.clear();
                 operatorField.clear();
                 valueField.clear();
@@ -211,7 +211,7 @@ public class FilterManager {
             applyColumnAndRowFilters();
         });
 
-        // Create layout with NOT checkbox
+        
         HBox firstRow = new HBox(10, columnField, operatorField, valueField, andLabel, valueField2Custom, notCheckBox, addFilterButton);
         firstRow.setAlignment(Pos.CENTER_LEFT);
         HBox secondRow = new HBox(10, orToggleButton, clearFiltersButton);
@@ -220,7 +220,7 @@ public class FilterManager {
         filterControlsBox = new VBox(5, firstRow, secondRow);
         filterControlsBox.setStyle("-fx-padding: 10; -fx-background-color: #2c3e50; -fx-background-radius: 5;");
 
-        // Active filters display
+        
         activeFiltersLabel = new Label("Active Filters:");
         activeFiltersLabel.setTextFill(Color.WHITE);
         activeFiltersLabel.setFont(Font.font("Verdana", 12));
@@ -232,7 +232,7 @@ public class FilterManager {
     }
 
     private void setupAutoCompleteData() {
-        // Setup autocomplete for operator field
+        
         operatorField.setItems(allOperators);
     }
 
@@ -300,7 +300,7 @@ public class FilterManager {
 
         System.out.println("FilterManager.setData() called with " + headers.size() + " headers and " + allRows.size() + " rows");
 
-        // Set autocomplete items
+        
         columnField.setItems(headers);
         operatorField.setItems(allOperators);
     }
@@ -315,7 +315,7 @@ public class FilterManager {
         }
     }
 
-    // Custom AutoComplete TextField Class
+    
     public static class AutoCompleteTextField extends TextField {
         private List<String> items = new ArrayList<>();
         private Popup popup;
@@ -342,7 +342,7 @@ public class FilterManager {
                             "-fx-font-size: 12px;"
             );
 
-            // Style individual cells to match the gradient theme
+            
             listView.setCellFactory(lv -> {
                 ListCell<String> cell = new ListCell<String>() {
                     @Override
@@ -363,7 +363,7 @@ public class FilterManager {
                     }
                 };
 
-                // Hover effect for cells
+                
                 cell.setOnMouseEntered(e -> {
                     if (!cell.isEmpty()) {
                         cell.setStyle(
@@ -454,7 +454,7 @@ public class FilterManager {
                     .filter(item -> item.toLowerCase().contains(searchText))
                     .collect(Collectors.toList());
 
-            // Sort suggestions: exact matches first, then starts with, then contains
+            
             filteredItems.sort((a, b) -> {
                 String aLower = a.toLowerCase();
                 String bLower = b.toLowerCase();
@@ -475,7 +475,7 @@ public class FilterManager {
             if (filteredItems.isEmpty()) {
                 hidePopup();
             } else {
-                // Limit to 10 suggestions for performance
+                
                 if (filteredItems.size() > 10) {
                     filteredItems = filteredItems.subList(0, 10);
                 }
@@ -503,7 +503,7 @@ public class FilterManager {
 
         private void showPopup() {
             if (!isPopupShowing && getScene() != null) {
-                // Get the bounds of the TextField in screen coordinates
+                
                 var bounds = localToScreen(getBoundsInLocal());
                 popup.show(this, bounds.getMinX(), bounds.getMaxY());
                 isPopupShowing = true;
@@ -522,7 +522,7 @@ public class FilterManager {
         }
     }
 
-    // Rest of the existing methods remain the same...
+    
     public void addFilter(String filter) {
         if (!activeFilters.contains(filter)) {
             activeFilters.add(filter);
