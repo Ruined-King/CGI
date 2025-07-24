@@ -11,6 +11,8 @@ import javafx.scene.text.FontWeight;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
+
 public class StatisticsManager {
     private final VBox statisticsSection;
     private List<String> headers = new ArrayList<>();
@@ -18,7 +20,7 @@ public class StatisticsManager {
     private ComboBox<String> columnSelector;
     private Label statisticsResultLabel;
     private Button calculateButton;
-    private FilterManager filterManager; // For filtered data support
+    private FilterManager filterManager; 
 
     public StatisticsManager(VBox statisticsSection) {
         this.statisticsSection = statisticsSection;
@@ -30,7 +32,7 @@ public class StatisticsManager {
         statsLabel.setTextFill(Color.WHITE);
         statsLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
 
-        // Column selector
+        
         HBox columnSelectorBox = new HBox(10);
         Label columnLabel = new Label("Column:");
         columnLabel.setTextFill(Color.WHITE);
@@ -46,14 +48,14 @@ public class StatisticsManager {
 
         columnSelectorBox.getChildren().addAll(columnLabel, columnSelector);
 
-        // Calculate button
+        
         calculateButton = new Button("📈 CALCULATE STATISTICS");
         calculateButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; " +
                 "-fx-font-weight: bold; -fx-padding: 8 16 8 16; " +
                 "-fx-background-radius: 6;");
         calculateButton.setOnAction(e -> calculateStatistics());
 
-        // Results label
+        
         statisticsResultLabel = new Label("");
         statisticsResultLabel.setTextFill(Color.LIGHTBLUE);
         statisticsResultLabel.setFont(Font.font("Verdana", 12));
@@ -74,7 +76,7 @@ public class StatisticsManager {
         this.headers = new ArrayList<>(headers);
         this.allRows = new ArrayList<>(allRows);
 
-        // Populate column selector with all columns
+        
         Platform.runLater(() -> {
             columnSelector.setItems(FXCollections.observableArrayList(headers));
         });
@@ -99,10 +101,10 @@ public class StatisticsManager {
             return;
         }
 
-        // Get data (filtered if filter manager is available)
+        
         List<ObservableList<String>> dataToAnalyze = getDataToAnalyze();
 
-        // Extract numeric values from the selected column
+        
         List<Double> numericValues = extractNumericValues(dataToAnalyze, columnIndex);
 
         if (numericValues.isEmpty()) {
@@ -111,19 +113,19 @@ public class StatisticsManager {
             return;
         }
 
-        // Calculate statistics
+        
         StatisticsResult stats = calculateAllStatistics(numericValues);
 
-        // Display results
+        
         displayStatistics(stats, selectedColumn, numericValues.size(), dataToAnalyze.size());
     }
 
     private List<ObservableList<String>> getDataToAnalyze() {
-        // If filter manager is available and has active filters, use filtered data
+        
         if (filterManager != null && filterManager.hasActiveFilters()) {
             return filterManager.getFilteredRows();
         }
-        // Otherwise use all data
+        
         return allRows;
     }
 
@@ -135,10 +137,10 @@ public class StatisticsManager {
                 String value = row.get(columnIndex);
                 if (value != null && !value.trim().isEmpty()) {
                     try {
-                        // Handle different number formats
+                        
                         String cleanValue = value.trim()
-                                .replace(",", ".")  // Handle comma as decimal separator
-                                .replaceAll("[^0-9.-]", ""); // Remove non-numeric characters except . and -
+                                .replace(",", ".")  
+                                .replaceAll("[^0-9.-]", ""); 
 
                         if (!cleanValue.isEmpty()) {
                             double numValue = Double.parseDouble(cleanValue);
@@ -147,7 +149,7 @@ public class StatisticsManager {
                             }
                         }
                     } catch (NumberFormatException e) {
-                        // Skip non-numeric values
+                        
                     }
                 }
             }
@@ -161,35 +163,35 @@ public class StatisticsManager {
 
         if (values.isEmpty()) return result;
 
-        // Sort values for percentile calculations
+        
         List<Double> sortedValues = new ArrayList<>(values);
         Collections.sort(sortedValues);
 
-        // Basic statistics
+        
         result.count = values.size();
         result.min = sortedValues.get(0);
         result.max = sortedValues.get(sortedValues.size() - 1);
         result.sum = values.stream().mapToDouble(Double::doubleValue).sum();
         result.mean = result.sum / result.count;
 
-        // Median
+        
         if (result.count % 2 == 0) {
             result.median = (sortedValues.get(result.count / 2 - 1) + sortedValues.get(result.count / 2)) / 2.0;
         } else {
             result.median = sortedValues.get(result.count / 2);
         }
 
-        // Standard deviation and variance
+        
         double sumSquaredDiffs = values.stream()
                 .mapToDouble(v -> Math.pow(v - result.mean, 2))
                 .sum();
         result.variance = sumSquaredDiffs / result.count;
         result.standardDeviation = Math.sqrt(result.variance);
 
-        // Range
+        
         result.range = result.max - result.min;
 
-        // Quartiles
+        
         result.q1 = calculatePercentile(sortedValues, 25);
         result.q3 = calculatePercentile(sortedValues, 75);
         result.iqr = result.q3 - result.q1;
@@ -220,19 +222,19 @@ public class StatisticsManager {
 
         result.append("📊 Statistics for '").append(columnName).append("':\n\n");
 
-        // Data info
+        
         result.append("📈 Data Overview:\n");
         result.append(String.format("  • Total rows analyzed: %d\n", totalRows));
         result.append(String.format("  • Numeric values found: %d\n", numericCount));
         result.append(String.format("  • Non-numeric/empty: %d\n\n", totalRows - numericCount));
 
-        // Central tendency
+        
         result.append("🎯 Central Tendency:\n");
         result.append(String.format("  • Mean (Average): %.2f\n", stats.mean));
         result.append(String.format("  • Median: %.2f\n", stats.median));
         result.append(String.format("  • Sum: %.2f\n\n", stats.sum));
 
-        // Range and spread
+        
         result.append("📏 Range & Spread:\n");
         result.append(String.format("  • Minimum: %.2f\n", stats.min));
         result.append(String.format("  • Maximum: %.2f\n", stats.max));
@@ -240,13 +242,13 @@ public class StatisticsManager {
         result.append(String.format("  • Standard Deviation: %.2f\n", stats.standardDeviation));
         result.append(String.format("  • Variance: %.2f\n\n", stats.variance));
 
-        // Quartiles
+        
         result.append("📊 Quartiles:\n");
         result.append(String.format("  • Q1 (25th percentile): %.2f\n", stats.q1));
         result.append(String.format("  • Q3 (75th percentile): %.2f\n", stats.q3));
         result.append(String.format("  • IQR (Interquartile Range): %.2f\n", stats.iqr));
 
-        // Check if filters are applied
+        
         if (filterManager != null && filterManager.hasActiveFilters()) {
             result.append("\n🔍 Note: Statistics calculated on filtered data");
         }
@@ -255,7 +257,7 @@ public class StatisticsManager {
         statisticsResultLabel.setTextFill(Color.LIGHTGREEN);
     }
 
-    // Getter methods
+    
     public VBox getStatisticsSection() {
         return statisticsSection;
     }
@@ -264,7 +266,7 @@ public class StatisticsManager {
         return calculateButton;
     }
 
-    // Helper class to store statistics results
+    
     private static class StatisticsResult {
         int count;
         double min, max, sum, mean, median;
