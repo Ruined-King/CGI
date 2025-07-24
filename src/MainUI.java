@@ -51,14 +51,14 @@ public class MainUI extends Application {
     private TableEditor embeddedEditor;
 
 
-    // Logo
+    
     private ImageView logoView;
     private ImageView companyLogoView;
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
 
-        // Safe icon loading
+        
         try {
             Image icon = new Image(getClass().getResource("/resources/XED.jpg").toExternalForm());
             primaryStage.getIcons().add(icon);
@@ -66,7 +66,7 @@ public class MainUI extends Application {
             System.err.println("Warning: Could not load application icon");
         }
 
-      
+        
         dataManager = new ExcelDataManager();
         filterManager = new FilterManager();
         tableController = new TableViewController();
@@ -81,6 +81,7 @@ public class MainUI extends Application {
         }
 
 
+        
         try {
             Image catGif = new Image(getClass().getResource("/resources/cat.gif").toExternalForm());
             loadingImage = new ImageView(catGif);
@@ -89,11 +90,11 @@ public class MainUI extends Application {
             loadingImage.setVisible(false);
         } catch (Exception e) {
             System.err.println("Warning: Could not load loading animation");
-            loadingImage = new ImageView(); // Create empty ImageView
+            loadingImage = new ImageView(); 
             loadingImage.setVisible(false);
         }
 
-        // Safe preset callback setup
+        
         try {
             PresetManager.setLoadPresetCallback(this::loadPresetData);
         } catch (Exception e) {
@@ -189,28 +190,28 @@ public class MainUI extends Application {
         welcomeTitle.setFill(Color.WHITE);
 
         DropShadow titleShadow = new DropShadow();
-        titleShadow.setColor(Color.rgb(220, 20, 60, 0.8)); // Crimson shadow
+        titleShadow.setColor(Color.rgb(220, 20, 60, 0.8)); 
         titleShadow.setOffsetX(3);
         titleShadow.setOffsetY(3);
         titleShadow.setRadius(10);
         welcomeTitle.setEffect(titleShadow);
 
 
-        // Subtitle
+        
         Text subtitle = new Text("Your Excel Evaluator and Displayer Tool");
         subtitle.setFont(Font.font("Arial", FontWeight.NORMAL, 20));
         subtitle.setFill(Color.rgb(255, 255, 255, 0.9));
 
-        // Path display
+        
         pathText = createPathText();
         pathText.setFill(Color.rgb(255, 255, 255, 0.8));
 
-        // Action buttons container
+        
         VBox buttonsContainer = new VBox(20);
         buttonsContainer.setAlignment(Pos.CENTER);
         buttonsContainer.setMaxWidth(400);
 
-        // File selection button
+        
         Button chooseFileButton = createModernButton("📂 Choose Excel File", "#dc143c", 16);
         chooseFileButton.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
@@ -222,7 +223,7 @@ public class MainUI extends Application {
             }
         });
 
-        // Enter button
+        
         Button enterButton = createModernButton("🚀 ENTER APPLICATION", "#8b0000", 16);
         enterButton.setOnAction(e -> {
             if (selectedFile != null) {
@@ -232,7 +233,7 @@ public class MainUI extends Application {
             }
         });
 
-        // Preset buttons
+        
         Button savePresetButton = createModernButton("💾 Save Preset", "#b22222", 14);
         Button managePresetsButton = createModernButton("📂 Manage Presets", "#a0522d", 14);
 
@@ -248,7 +249,7 @@ public class MainUI extends Application {
             PresetManager.showPresetManagerDialog();
         });
 
-        // Button layout
+        
         HBox presetButtons = new HBox(15, savePresetButton, managePresetsButton);
         presetButtons.setAlignment(Pos.CENTER);
 
@@ -283,7 +284,7 @@ public class MainUI extends Application {
 
     private void createMainAppScene() {
         VBox mainLayout = new VBox();
-        mainLayout.setStyle("-fx-background-color: #1a1a1a;"); // Dark background
+        mainLayout.setStyle("-fx-background-color: #1a1a1a;"); 
 
         HBox topBar = createTopBar();
 
@@ -337,7 +338,7 @@ public class MainUI extends Application {
                         throw new RuntimeException("No data to export");
                     }
 
-                    // Create header row
+                    
                     Row headerRow = sheet.createRow(0);
                     CellStyle headerStyle = workbook.createCellStyle();
                     org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
@@ -360,7 +361,7 @@ public class MainUI extends Application {
                         }
                     }
 
-                    // Create data rows
+                    
                     CellStyle dataStyle = workbook.createCellStyle();
                     dataStyle.setBorderBottom(BorderStyle.THIN);
                     dataStyle.setBorderTop(BorderStyle.THIN);
@@ -381,7 +382,7 @@ public class MainUI extends Application {
                         }
                     }
 
-                    // Auto-size columns
+                    
                     for (int i = 0; i < table.getColumns().size(); i++) {
                         sheet.autoSizeColumn(i);
                     }
@@ -454,7 +455,7 @@ public class MainUI extends Application {
         Button newFileButton = createCompactButton("📂 New File", "#dc143c");
         Button savePresetButton = createCompactButton("💾 Save", "#b22222");
         Button managePresetsButton = createCompactButton("📂 Presets", "#8b0000");
-        Button exportButton = createCompactButton("📤 Export Excel", "#228b22");
+        Button exportButton = createCompactButton("📤 Export Excel", "#228b22"); 
         fullscreenButton = createCompactButton("⛶ Fullscreen", "#a0522d");
         fullscreenButton.setDisable(true);
 
@@ -762,7 +763,7 @@ public class MainUI extends Application {
                             crosstabUI.refreshUI();
                         }
                         if (embeddedEditor != null) {
-                            embeddedEditor.resetAfterPresetLoad();
+                            embeddedEditor.resetAfterPresetLoad(); 
                         }
 
                         showModernAlert("Success",
@@ -851,7 +852,7 @@ public class MainUI extends Application {
 
         TableView<ObservableList<String>> clonedTable = tableController.createClonedTableView();
         ScrollPane fullscreenPane = new ScrollPane(clonedTable);
-        fullscreenPane.setFitToWidth(false); 
+        fullscreenPane.setFitToWidth(false);  
         fullscreenPane.setFitToHeight(true);
         fullscreenPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);  
         fullscreenPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -883,7 +884,7 @@ public class MainUI extends Application {
         alert.setHeaderText(null);
         alert.setContentText(message);
 
-        // Style the alert with black and red theme
+        
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.setStyle(
                 "-fx-background-color: white; " +
