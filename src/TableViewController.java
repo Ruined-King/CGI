@@ -23,7 +23,7 @@ public class TableViewController {
                         "-fx-text-fill: black;"
         );
 
-        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY); 
     }
     private ScrollPane tableScrollPane;
     private FilterManager filterManager;
@@ -31,15 +31,16 @@ public class TableViewController {
     public TableViewController() {
         setupTableView();
     }
+    
 
     public List<String> getAllHeaders() {
-        return new ArrayList<>(headers);
+        return new ArrayList<>(headers); 
     }
 
     public List<ObservableList<String>> getAllRows() {
-        return new ArrayList<>(allRows); // assuming data is your row data
+        return new ArrayList<>(allRows); 
     }
-
+    
     public List<String> getVisibleHeaders() {
         List<String> visibleHeaders = new ArrayList<>();
         for (TableColumn<ObservableList<String>, ?> col : tableView.getColumns()) {
@@ -48,26 +49,33 @@ public class TableViewController {
         return visibleHeaders;
     }
 
+    
     public List<ObservableList<String>> getFilteredRows() {
         return new ArrayList<>(tableView.getItems());
     }
 
     public void addNewColumn(String columnName, List<String> columnData) {
+        
         headers.add(columnName);
 
+        
         for (int i = 0; i < allRows.size() && i < columnData.size(); i++) {
             allRows.get(i).add(columnData.get(i));
         }
 
+        
         for (int i = allRows.size(); i < columnData.size(); i++) {
             ObservableList<String> newRow = FXCollections.observableArrayList();
+            
             for (int j = 0; j < headers.size() - 1; j++) {
                 newRow.add("");
             }
+            
             newRow.add(columnData.get(i));
             allRows.add(newRow);
         }
 
+        
         refreshTable();
     }
 
@@ -138,10 +146,13 @@ public class TableViewController {
         tableView.getColumns().clear();
         tableView.getItems().clear();
 
+        
         List<Integer> includedIndices = getIncludedColumnIndices(columnFilterInput);
 
+        
         createTableColumns(includedIndices);
 
+        
         addFilteredRows(rowFilter, includedIndices);
     }
 
