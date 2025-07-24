@@ -35,17 +35,14 @@ public class CrosstabUI {
     private Text statusText;
     private CheckBox includeAllMonthsCheckBox;
 
-    // Data components
     private CrosstabData crosstabData;
     private CrosstabTable crosstabTableManager;
     private CrosstabCharts crosstabCharts;
     private FilterManager filterManager;
 
-    // Data
     private List<String> headers;
     private List<ObservableList<String>> allRows;
 
-    // Store original items for autocomplete
     private ObservableList<String> originalItems;
 
     public CrosstabUI() {
@@ -59,10 +56,8 @@ public class CrosstabUI {
         crosstabSection.setPadding(new Insets(20));
         crosstabSection.setStyle("-fx-background-color: #1a1a1a;");
 
-        // Create control panel
         VBox controlPanel = createControlPanel();
 
-        // Create table section
         VBox tableSection = createTableSection();
 
         crosstabSection.getChildren().addAll(controlPanel, tableSection);
@@ -81,21 +76,16 @@ public class CrosstabUI {
                         "-fx-effect: dropshadow(gaussian, rgba(220,20,60,0.3), 10, 0, 0, 2);"
         );
 
-        // Title
         Text title = new Text("📈 Crosstab Analysis Configuration");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 18));
         title.setFill(Color.WHITE);
 
-        // Column selection section
         HBox columnSelectionBox = createColumnSelectionBox();
 
-        // Options section
         VBox optionsBox = createOptionsBox();
 
-        // Buttons section
         HBox buttonsBox = createButtonsBox();
 
-        // Status text
         statusText = new Text("Select columns and click Generate to create crosstab");
         statusText.setFont(Font.font("Arial", FontWeight.NORMAL, 12));
         statusText.setFill(Color.rgb(255, 255, 255, 0.8));
@@ -115,7 +105,6 @@ public class CrosstabUI {
         HBox columnBox = new HBox(20);
         columnBox.setAlignment(Pos.CENTER_LEFT);
 
-        // X Column selection
         VBox xColumnBox = new VBox(5);
         Text xLabel = new Text("X-Axis Column (Rows):");
         xLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 14));
@@ -125,11 +114,11 @@ public class CrosstabUI {
         xColumnField.setPrefWidth(200);
         xColumnField.setPromptText("Type to search X column...");
         styleTextField(xColumnField);
-        setupCustomAutocomplete(xColumnField, true); // true for X column
+        setupCustomAutocomplete(xColumnField, true);
 
         xColumnBox.getChildren().addAll(xLabel, xColumnField);
 
-        // Switch button
+        
         switchColumnsButton = new Button("⇄");
         switchColumnsButton.setFont(Font.font("Arial", FontWeight.BOLD, 16));
         switchColumnsButton.setPrefWidth(40);
@@ -143,7 +132,7 @@ public class CrosstabUI {
         switchColumnsButton.setOnAction(e -> switchColumns());
         switchColumnsButton.setTooltip(new Tooltip("Switch X and Y columns"));
 
-        // Y Column selection
+        
         VBox yColumnBox = new VBox(5);
         Text yLabel = new Text("Y-Axis Column (Columns):");
         yLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 14));
@@ -153,7 +142,7 @@ public class CrosstabUI {
         yColumnField.setPrefWidth(200);
         yColumnField.setPromptText("Type to search Y column...");
         styleTextField(yColumnField);
-        setupCustomAutocomplete(yColumnField, false); // false for Y column
+        setupCustomAutocomplete(yColumnField, false); 
 
         yColumnBox.getChildren().addAll(yLabel, yColumnField);
 
@@ -162,13 +151,13 @@ public class CrosstabUI {
     }
 
     private void setupCustomAutocomplete(TextField textField, boolean isXColumn) {
-        // Create popup and ListView
+        
         Popup popup = new Popup();
         ListView<String> listView = new ListView<>();
         listView.setPrefWidth(textField.getPrefWidth());
         listView.setMaxHeight(150);
 
-        // Style the ListView
+        
         listView.setStyle(
                 "-fx-background-color: white; " +
                         "-fx-border-color: #d3d3d3; " +
@@ -192,7 +181,7 @@ public class CrosstabUI {
         popup.setAutoHide(true);
         popup.setHideOnEscape(true);
 
-        // Store references
+        
         if (isXColumn) {
             xColumnPopup = popup;
             xColumnListView = listView;
@@ -201,7 +190,7 @@ public class CrosstabUI {
             yColumnListView = listView;
         }
 
-        // Handle text changes for filtering
+        
         textField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (originalItems == null || originalItems.isEmpty()) {
                 return;
@@ -212,14 +201,14 @@ public class CrosstabUI {
                 return;
             }
 
-            // Filter items based on text input (support multiple words)
+            
             String searchText = newVal.toLowerCase().trim();
             String[] searchWords = searchText.split("\\s+");
 
             List<String> filtered = originalItems.stream()
                     .filter(item -> {
                         String itemLower = item.toLowerCase();
-                        // Check if all search words are contained in the item
+                        
                         for (String word : searchWords) {
                             if (!itemLower.contains(word)) {
                                 return false;
@@ -233,7 +222,7 @@ public class CrosstabUI {
                 listView.setItems(FXCollections.observableArrayList(filtered));
 
                 if (!filtered.isEmpty()) {
-                    // Show popup below the text field
+                    
                     if (!popup.isShowing()) {
                         popup.show(textField,
                                 textField.localToScreen(textField.getBoundsInLocal()).getMinX(),
@@ -245,7 +234,7 @@ public class CrosstabUI {
             });
         });
 
-        // Handle selection from ListView
+        
         listView.setOnMouseClicked(e -> {
             String selected = listView.getSelectionModel().getSelectedItem();
             if (selected != null) {
@@ -254,7 +243,7 @@ public class CrosstabUI {
             }
         });
 
-        // Handle keyboard navigation
+        
         textField.setOnKeyPressed(e -> {
             if (popup.isShowing()) {
                 switch (e.getCode()) {
@@ -284,10 +273,10 @@ public class CrosstabUI {
             } else {
                 switch (e.getCode()) {
                     case DOWN:
-                        // Show popup if there's text and items to show
+                        
                         if (!textField.getText().trim().isEmpty()) {
                             String currentText = textField.getText();
-                            textField.setText(currentText); // triggers listener naturally
+                            textField.setText(currentText); 
 
                         }
                         e.consume();
@@ -296,7 +285,7 @@ public class CrosstabUI {
             }
         });
 
-        // Handle ListView key events
+        
         listView.setOnKeyPressed(e -> {
             switch (e.getCode()) {
                 case ENTER:
@@ -316,10 +305,10 @@ public class CrosstabUI {
             }
         });
 
-        // Hide popup when focus is lost
+        
         textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (!isNowFocused) {
-                // Delay hiding to allow for click selection
+                
                 Platform.runLater(() -> {
                     if (!listView.isFocused()) {
                         popup.hide();
@@ -354,26 +343,26 @@ public class CrosstabUI {
         HBox optionsRow = new HBox(30);
         optionsRow.setAlignment(Pos.CENTER_LEFT);
 
-        // Apply filters checkbox
+        
         applyFiltersCheckBox = new CheckBox("Apply Active Filters");
         applyFiltersCheckBox.setTextFill(Color.WHITE);
         applyFiltersCheckBox.setFont(Font.font("Arial", FontWeight.NORMAL, 12));
         applyFiltersCheckBox.setSelected(true);
 
-        // Monthly conversion checkbox
+        
         monthlyConversionCheckBox = new CheckBox("Convert Dates to Month-Year");
         monthlyConversionCheckBox.setTextFill(Color.WHITE);
         monthlyConversionCheckBox.setFont(Font.font("Arial", FontWeight.NORMAL, 12));
         monthlyConversionCheckBox.setSelected(false);
 
-        // Total only checkbox
+        
         totalOnlyCheckBox = new CheckBox("Charts: Show Only Totals");
         totalOnlyCheckBox.setTextFill(Color.WHITE);
         totalOnlyCheckBox.setFont(Font.font("Arial", FontWeight.NORMAL, 12));
         totalOnlyCheckBox.setSelected(false);
         totalOnlyCheckBox.setTooltip(new Tooltip("When enabled, charts will only show total values instead of individual categories"));
 
-        // Include all months checkbox
+        
         includeAllMonthsCheckBox = new CheckBox("Charts: Include All Months in Present Years");
         includeAllMonthsCheckBox.setTextFill(Color.WHITE);
         includeAllMonthsCheckBox.setFont(Font.font("Arial", FontWeight.NORMAL, 12));
@@ -382,7 +371,7 @@ public class CrosstabUI {
 
         optionsRow.getChildren().addAll(applyFiltersCheckBox, monthlyConversionCheckBox, totalOnlyCheckBox);
 
-        // Style checkboxes
+        
         styleCheckBox(applyFiltersCheckBox);
         styleCheckBox(monthlyConversionCheckBox);
         styleCheckBox(totalOnlyCheckBox);
@@ -404,16 +393,16 @@ public class CrosstabUI {
         HBox buttonsBox = new HBox(15);
         buttonsBox.setAlignment(Pos.CENTER_LEFT);
 
-        // Generate button
+        
         generateButton = createStyledButton("🔄 Generate Crosstab", "#dc143c");
         generateButton.setOnAction(e -> generateCrosstab());
 
-        // Charts button
+        
         showChartsButton = createStyledButton("📊 Open Charts", "#8b0000");
         showChartsButton.setDisable(true);
         showChartsButton.setOnAction(e -> showCharts());
 
-        // Clear button
+        
         Button clearButton = createStyledButton("🗑️ Clear", "#6c757d");
         clearButton.setOnAction(e -> clearCrosstab());
 
@@ -481,7 +470,7 @@ public class CrosstabUI {
         tableTitle.setFont(Font.font("Arial", FontWeight.BOLD, 16));
         tableTitle.setFill(Color.WHITE);
 
-        // Create table view
+        
         crosstabTable = new TableView<>();
         crosstabTable.setStyle(
                 "-fx-background-color: white;" +
@@ -500,7 +489,7 @@ public class CrosstabUI {
 
         crosstabTableManager = new CrosstabTable(crosstabTable, crosstabData);
 
-        // Add placeholder message
+        
         Label placeholderLabel = new Label("No crosstab data. Select columns and click 'Generate Crosstab' to begin.");
         placeholderLabel.setStyle(
                 "-fx-text-fill: #6c757d; " +
@@ -509,7 +498,7 @@ public class CrosstabUI {
         );
         crosstabTable.setPlaceholder(placeholderLabel);
 
-        // Add table directly to section without ScrollPane wrapper
+        
         tableSection.getChildren().addAll(tableTitle, crosstabTable);
         VBox.setVgrow(crosstabTable, Priority.ALWAYS);
 
@@ -536,7 +525,7 @@ public class CrosstabUI {
                 return;
             }
 
-            // Validate that the columns exist in the headers
+            
             if (!originalItems.contains(xColumn)) {
                 updateStatus("X column '" + xColumn + "' not found in data", true);
                 return;
@@ -554,12 +543,12 @@ public class CrosstabUI {
 
             boolean applyFilters = applyFiltersCheckBox.isSelected();
             boolean useMonthlyConversion = monthlyConversionCheckBox.isSelected();
-            boolean useCumulativeEffective = true; // Always show cumulative effective in table
+            boolean useCumulativeEffective = true; 
 
-            // Update status
+            
             updateStatus("Generating crosstab...", false);
 
-            // Generate crosstab data
+            
             crosstabData.generateCrosstabData(xColumn, yColumn, applyFilters, useMonthlyConversion);
 
             Map<String, Map<String, Integer>> filtered = crosstabData.getCrosstabData();
@@ -569,16 +558,16 @@ public class CrosstabUI {
                 alert.setHeaderText("Impossible de générer le tableau croisé");
                 alert.setContentText("Il n’y a pas de données à afficher après application des filtres.");
                 alert.showAndWait();
-                return; // empêcher le crash
+                return; 
             }
 
 
             crosstabTableManager.createCrosstabTable(xColumn, yColumn, useMonthlyConversion, useCumulativeEffective, true);
 
-            // Enable charts button
+            
             showChartsButton.setDisable(false);
 
-            // Update status with success message
+            
             int rowCount = crosstabData.getCrosstabData().size();
             String cumulativeMsg = useCumulativeEffective ? " (with cumulative effective)" : "";
             updateStatus("Crosstab generated successfully! " + rowCount + " rows created" + cumulativeMsg + ".", false);
@@ -615,20 +604,18 @@ public class CrosstabUI {
     private void updateStatus(String message, boolean isError) {
         statusText.setText(message);
         if (isError) {
-            statusText.setFill(Color.rgb(220, 20, 60)); // Red for errors
+            statusText.setFill(Color.rgb(220, 20, 60)); 
         } else {
-            statusText.setFill(Color.rgb(255, 255, 255, 0.8)); // White for normal status
+            statusText.setFill(Color.rgb(255, 255, 255, 0.8)); 
         }
     }
 
-    // Public methods for integration
     public void setData(List<String> headers, List<ObservableList<String>> allRows) {
         this.headers = headers;
         this.allRows = allRows;
 
         crosstabData.setData(headers, allRows);
 
-        // Store original items for autocomplete
         originalItems = FXCollections.observableArrayList(headers);
 
         updateStatus("Data loaded. " + headers.size() + " columns available.", false);
@@ -647,7 +634,6 @@ public class CrosstabUI {
         return crosstabTable;
     }
 
-    // Method to refresh UI when filters change
     public void refreshUI() {
         if (headers != null && !headers.isEmpty()) {
             originalItems = FXCollections.observableArrayList(headers);
@@ -658,7 +644,6 @@ public class CrosstabUI {
         return crosstabData;
     }
 
-    // Getter methods for the text fields (for compatibility)
     public String getXColumnValue() {
         return xColumnField.getText().trim();
     }
