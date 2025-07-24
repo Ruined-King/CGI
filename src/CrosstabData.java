@@ -104,15 +104,13 @@ public class CrosstabData {
 
         int columnIndex = headers.indexOf(columnName);
         if (columnIndex == -1) return false;
-
-        // Check first few non-empty values to see if they're dates
         int checkedCount = 0;
         int dateCount = 0;
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         sdf.setLenient(false);
 
         for (ObservableList<String> row : allRows) {
-            if (checkedCount >= 10) break; // Check first 10 values
+            if (checkedCount >= 10) break;
             if (row == null || columnIndex >= row.size()) continue;
 
             String value = row.get(columnIndex);
@@ -122,12 +120,12 @@ public class CrosstabData {
                 sdf.parse(value.trim());
                 dateCount++;
             } catch (ParseException e) {
-                // Not a date
+
             }
             checkedCount++;
         }
 
-        return checkedCount > 0 && (dateCount >= checkedCount * 0.7); 
+        return checkedCount > 0 && (dateCount >= checkedCount * 0.7); // 70% should be dates
     }
 
     public void generateCrosstabData(String xColumn, String yColumn, boolean applyFilters, boolean useMonthlyConversion) {
@@ -183,6 +181,7 @@ public class CrosstabData {
             yValue = yValue.trim();
 
             if (xValue.isEmpty() || yValue.isEmpty()) continue;
+
             if (useMonthlyConversion) {
                 if (isDateColumn(xColumn)) {
                     xValue = convertToMonthYear(xValue);
@@ -224,7 +223,6 @@ public class CrosstabData {
             }
         }
 
-        // Debug output
         int totalEntries = crosstabData.values().stream()
                 .mapToInt(map -> map.values().stream().mapToInt(Integer::intValue).sum())
                 .sum();
@@ -249,7 +247,7 @@ public class CrosstabData {
 
         } catch (ParseException e) {
             System.err.println("Failed to parse date: " + dateStr);
-            return null; // Return null if parsing fails
+            return null;
         }
     }
 
@@ -262,7 +260,6 @@ public class CrosstabData {
         Date minDate = null;
         Date maxDate = null;
 
-        // Find the first date column
         int dateColumnIndex = -1;
         for (int i = 0; i < headers.size(); i++) {
             if (isDateColumn(headers.get(i))) {
@@ -276,7 +273,6 @@ public class CrosstabData {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         sdf.setLenient(false);
 
-        // Get data to process (apply filters if filterManager is set)
         List<ObservableList<String>> dataToProcess = allRows;
         if (filterManager != null && filterManager.hasActiveFilters()) {
             dataToProcess = filterManager.getFilteredRows();
@@ -293,11 +289,9 @@ public class CrosstabData {
                 if (minDate == null || date.before(minDate)) minDate = date;
                 if (maxDate == null || date.after(maxDate)) maxDate = date;
             } catch (ParseException e) {
-                // skip invalid dates
             }
         }
 
-        // Generate month range from min to max
         if (minDate != null && maxDate != null) {
             monthRange.addAll(generateMonthRange(minDate, maxDate, includeAllMonths));
         }
@@ -305,7 +299,6 @@ public class CrosstabData {
         return monthRange;
     }
 
-    // Helper method to generate month range between two dates
     private Set<String> generateMonthRange(Date minDate, Date maxDate, boolean includeAllMonths) {
         Set<String> monthRange = new TreeSet<>(this::compareMonthYear);
 
@@ -316,7 +309,6 @@ public class CrosstabData {
         Calendar maxCal = Calendar.getInstance();
         maxCal.setTime(maxDate);
 
-        // If includeAllMonths is true, extend maxDate to December of the same year
         if (includeAllMonths) {
             maxCal.set(Calendar.MONTH, Calendar.DECEMBER);
             maxCal.set(Calendar.DAY_OF_MONTH, 31);
@@ -371,13 +363,11 @@ public class CrosstabData {
                             maxDate = date;
                         }
                     } catch (ParseException e) {
-                        // Skip invalid dates
                     }
                 }
             }
         }
 
-        // Generate complete month range from min to max
         if (minDate != null && maxDate != null) {
             monthRange.addAll(generateMonthRange(minDate, maxDate, includeAllMonths));
         }
@@ -385,7 +375,6 @@ public class CrosstabData {
         return monthRange;
     }
 
-    // Get month range for X values only (rows)
     public Set<String> createMonthRangeForX(String xColumn, boolean applyFilters) {
         return createMonthRangeForX(xColumn, applyFilters, false);
     }
@@ -405,7 +394,6 @@ public class CrosstabData {
             dataToProcess = filterManager.getFilteredRows();
         }
 
-        // Find min and max dates from X column
         Date minDate = null;
         Date maxDate = null;
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -424,13 +412,11 @@ public class CrosstabData {
                             maxDate = date;
                         }
                     } catch (ParseException e) {
-                        // Skip invalid dates
                     }
                 }
             }
         }
 
-        // Generate complete month range from min to max
         if (minDate != null && maxDate != null) {
             monthRange.addAll(generateMonthRange(minDate, maxDate, includeAllMonths));
         }
@@ -460,9 +446,7 @@ public class CrosstabData {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         sdf.setLenient(false);
 
-        // Check both X and Y columns for dates in the FILTERED data
         for (ObservableList<String> row : dataToProcess) {
-            // Check X column if it's a date column
             if (isDateColumn(xColumn) && xIndex < row.size()) {
                 String xValue = row.get(xIndex).trim();
                 Date date = parseDate(xValue, sdf);
@@ -472,7 +456,6 @@ public class CrosstabData {
                 }
             }
 
-            // Check Y column if it's a date column
             if (isDateColumn(yColumn) && yIndex < row.size()) {
                 String yValue = row.get(yIndex).trim();
                 Date date = parseDate(yValue, sdf);
@@ -483,16 +466,13 @@ public class CrosstabData {
             }
         }
 
-        // Generate complete month range from min to max
         if (minDate != null && maxDate != null) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(minDate);
-            cal.set(Calendar.DAY_OF_MONTH, 1); // Start from first day of month
-
+            cal.set(Calendar.DAY_OF_MONTH, 1);
             Calendar maxCal = Calendar.getInstance();
             maxCal.setTime(maxDate);
 
-            // If includeAllMonths is true, extend to December of the max year
             if (includeAllMonths) {
                 maxCal.set(Calendar.MONTH, Calendar.DECEMBER);
                 maxCal.set(Calendar.DAY_OF_MONTH, 31);
@@ -525,14 +505,11 @@ public class CrosstabData {
 
     public Set<String> createCompleteMonthRangeForX(boolean includeAllMonths) {
         Set<String> monthRange = new TreeSet<>(this::compareMonthYear);
-
-        // Get filtered data (same as what's used in crosstab generation)
         List<ObservableList<String>> dataToProcess = allRows;
         if (filterManager != null && filterManager.hasActiveFilters()) {
             dataToProcess = filterManager.getFilteredRows();
         }
 
-        // Find the first date column to determine date range
         int dateColumnIndex = -1;
         for (int i = 0; i < headers.size(); i++) {
             if (isDateColumn(headers.get(i))) {
@@ -548,7 +525,6 @@ public class CrosstabData {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         sdf.setLenient(false);
 
-        // Find min and max dates from filtered data
         for (ObservableList<String> row : dataToProcess) {
             if (dateColumnIndex >= row.size()) continue;
             String value = row.get(dateColumnIndex).trim();
@@ -564,7 +540,6 @@ public class CrosstabData {
             }
         }
 
-        // Generate complete range from first to last month with data
         if (minDate != null && maxDate != null) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(minDate);
@@ -573,7 +548,6 @@ public class CrosstabData {
             Calendar maxCal = Calendar.getInstance();
             maxCal.setTime(maxDate);
 
-            // If includeAllMonths is true, extend to December of the max year
             if (includeAllMonths) {
                 maxCal.set(Calendar.MONTH, Calendar.DECEMBER);
                 maxCal.set(Calendar.DAY_OF_MONTH, 31);
@@ -614,7 +588,7 @@ public class CrosstabData {
 
     public int getMonthNumber(String monthName) {
         Integer monthNum = MONTH_MAP.get(monthName);
-        return monthNum != null ? monthNum : 1; // Default to January
+        return monthNum != null ? monthNum : 1;
     }
 
     public String convertCalendarToMonthYear(Calendar cal) {
